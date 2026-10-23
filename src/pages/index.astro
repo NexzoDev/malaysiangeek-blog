@@ -3,77 +3,143 @@ import {
 	getEmDashCollection,
 	getTermsForEntries,
 	getSiteSettings,
+	getTaxonomyTermsWithCacheHint,
 } from "emdash";
 import Base from "../layouts/Base.astro";
-import PostCard from "../components/PostCard.astro";
+import FeaturedGrid from "../components/FeaturedGrid.astro";
+import HomeFeed from "../components/HomeFeed.astro";
+import CommunitySection from "../components/CommunitySection.astro";
 import { resolveBlogSiteIdentity } from "../utils/site-identity";
 
-// Limit to what we render (1 featured + 6 grid). The DB does the slicing
-// instead of fetching every post and discarding the tail in JS.
-const POSTS_PER_PAGE = 7;
+const HERO_LIMIT = 12;
+const FEED_LIMIT = 5;
+const SCAN_LIMIT = 60;
 
-const [{ entries: posts, cacheHint }, settings] = await Promise.all([
+const [
+	{ entries: posts, cacheHint, nextCursor },
+	settings,
+	tagTermsResult,
+	categoryTermsResult,
+] = await Promise.all([
 	getEmDashCollection("posts", {
 		orderBy: { published_at: "desc" },
-		limit: POSTS_PER_PAGE + 1, // +1 to detect "view all" need
+		limit: SCAN_LIMIT,
 	}),
 	getSiteSettings(),
+	getTaxonomyTermsWithCacheHint("tag", { includeCounts: true }),
+	getTaxonomyTermsWithCacheHint("category", { includeCounts: true }),
 ]);
+
+if (Astro.cache?.enabled) {
+	Astro.cache.set(cacheHint);
+	Astro.cache.set(tagTermsResult.cacheHint);
+	Astro.cache.set(categoryTermsResult.cacheHint);
+}
+
 const { siteTitle, siteTagline } = resolveBlogSiteIdentity(settings);
 
-if (Astro.cache?.enabled) Astro.cache.set(cacheHint);
+type Post = (typeof posts)[number];
 
-// Trim the lookahead post used to detect overflow
-const visiblePosts = posts.slice(0, POSTS_PER_PAGE);
-const hasMorePosts = posts.length > POSTS_PER_PAGE;
+// `featured` is a boolean field, which the collection filter does not accept,
+// so select the curated posts here. Scanning the latest page keeps the
+// homepage to a single content query while preserving newest-first order.
+const isFeatured = (post: Post) =>
+	(post.data as { featured?: boolean }).featured === true;
 
-// Find the first post with a featured image for the hero
-const featuredPost = visiblePosts.find((p) => p.data.featured_image);
-const featuredIndex = featuredPost ? visiblePosts.indexOf(featuredPost) : -1;
+// Walk back through the archive until enough featured posts are found, so a
+// curated older story is never hidden behind the latest-page window.
+const featuredPool: Post[] = posts.filter(isFeatured);
+let featuredCursor = nextCursor;
+while (featuredCursor && featuredPool.length < HERO_LIMIT) {
+	const page = await getEmDashCollection("posts", {
+		orderBy: { published_at: "desc" },
+		limit: SCAN_LIMIT,
+		cursor: featuredCursor,
+	});
+	if (Astro.cache?.enabled) Astro.cache.set(page.cacheHint);
+	featuredPool.push(...page.entries.filter(isFeatured));
+	featuredCursor = page.nextCursor;
+}
+const heroPosts = featuredPool.slice(0, HERO_LIMIT);
 
-// Get remaining posts (exclude featured if found, limit to 6 for grid)
-const gridPosts = visiblePosts
-	.filter((_, i) => i !== featuredIndex)
-	.slice(0, 6);
-
-// Single batched query for tags across the featured post + grid posts.
-// Avoids the N+1 pattern of calling getEntryTerms() per entry.
-// Bylines are already hydrated on entry.data.bylines by getEmDashCollection.
-const tagEntryIds = [
-	...(featuredPost ? [featuredPost.data.id] : []),
-	...gridPosts.map((p) => p.data.id),
+// One batched query per taxonomy across every post on the page.
+const postIds = [
+	...new Set([...heroPosts, ...posts].map((post) => post.data.id)),
 ];
-const tagsByEntry = await getTermsForEntries("posts", tagEntryIds, "tag");
+const [tagsByEntry, categoriesByEntry] = await Promise.all([
+	getTermsForEntries("posts", postIds, "tag"),
+	getTermsForEntries("posts", postIds, "category"),
+]);
 
-const featuredTags = featuredPost
-	? (tagsByEntry.get(featuredPost.data.id) ?? []).map((t) => ({
-			slug: t.slug,
-			label: t.label,
-		}))
-	: [];
+const categoryFor = (post: Post) => {
+	const first = (categoriesByEntry.get(post.data.id) ?? [])[0];
+	return first ? { slug: first.slug, label: first.label } : null;
+};
 
-const gridPostsWithTags = gridPosts.map((post) => ({
+const tagsFor = (post: Post) =>
+	(tagsByEntry.get(post.data.id) ?? []).map((term) => ({
+		slug: term.slug,
+		label: term.label,
+	}));
+
+const heroItems = heroPosts.map((post) => ({
 	post,
-	tags: (tagsByEntry.get(post.data.id) ?? []).map((t) => ({
-		slug: t.slug,
-		label: t.label,
-	})),
+	category: categoryFor(post),
 }));
+
+const feedItems = posts.slice(0, FEED_LIMIT).map((post) => ({
+	post,
+	tags: tagsFor(post),
+	category: categoryFor(post),
+}));
+
+const publishedTime = (post: Post) =>
+	post.data.publishedAt ? new Date(post.data.publishedAt).getTime() : 0;
+
+// Visual-only "trending": rank by tag count, then recency.
+const trendingItems = [...feedItems].sort(
+	(a, b) =>
+		b.tags.length - a.tags.length ||
+		publishedTime(b.post) - publishedTime(a.post),
+);
+const latestItems = feedItems;
+
+const tagCount = (term: { count?: number }) => term.count ?? 0;
+const sidebarTags = [...tagTermsResult.data]
+	.sort((a, b) => tagCount(b) - tagCount(a))
+	.slice(0, 10)
+	.map((term) => ({ slug: term.slug, label: term.label }));
+
+const sidebarCategories = categoryTermsResult.data
+	.slice(0, 6)
+	.map((term) => ({ slug: term.slug, label: term.label }));
+
+const news: Array<{ id: string; title: string; publishedAt: Date | null }> = [];
+const newsPool = [...feedItems];
+while (news.length < 3 && newsPool.length > 0) {
+	const index = Math.floor(Math.random() * newsPool.length);
+	const picked = newsPool.splice(index, 1)[0];
+	if (!picked) break;
+	news.push({
+		id: picked.post.id,
+		title: picked.post.data.title || "Untitled",
+		publishedAt: picked.post.data.publishedAt ?? null,
+	});
+}
+
+const featured = posts[0]
+	? { id: posts[0].id, title: posts[0].data.title || "the latest post" }
+	: null;
 ---
 
 <Base title={siteTitle} description={siteTagline}>
-	<header class="band intro">
-		<div class="frame home-intro">
-			<div>
-				<p class="eyebrow">Blog</p>
-				<h1 class="intro__title">{siteTitle}</h1>
-				{siteTagline && <p class="intro__subtitle">{siteTagline}</p>}
+	<header class="band masthead">
+		<div class="frame masthead__inner">
+			<div class="masthead__text">
+				<p class="eyebrow">Malaysian tech, documented</p>
+				{siteTagline && <p class="masthead__tagline">{siteTagline}</p>}
 			</div>
-			<a
-				href="/rss.xml"
-				type="application/rss+xml"
-				class="btn btn--ghost btn--sm home-intro__rss"
-			>
+			<a href="/rss.xml" class="btn btn--ghost btn--sm">
 				<svg
 					viewBox="0 0 24 24"
 					fill="none"
@@ -111,84 +177,55 @@ const gridPostsWithTags = gridPosts.map((post) => ({
 			</section>
 		) : (
 			<>
-				{featuredPost && (
-					<section class="band section">
-						<div class="frame">
-							<PostCard
-								post={featuredPost}
-								tags={featuredTags}
-								variant="feature"
-								headingLevel={2}
-								priority
-							/>
-						</div>
-					</section>
-				)}
+				<FeaturedGrid items={heroItems} />
 
-				{gridPostsWithTags.length > 0 && (
-					<section class="band section" aria-labelledby="latest-posts">
-						<div class="frame">
-							<div class="section-head">
-								<h2 id="latest-posts" class="section-head__title">
-									Latest posts
-								</h2>
-								{hasMorePosts && (
-									<a href="/posts" class="arrow-link">
-										View all<span class="sr-only"> posts</span>
-										<svg
-											viewBox="0 0 24 24"
-											fill="none"
-											stroke="currentColor"
-											stroke-width="1.75"
-											stroke-linecap="round"
-											stroke-linejoin="round"
-											aria-hidden="true"
-										>
-											<path d="M5 12h14" />
-											<path d="m12 5 7 7-7 7" />
-										</svg>
-									</a>
-								)}
-							</div>
-							<div class="post-grid">
-								{gridPostsWithTags.map(({ post, tags }) => (
-									<PostCard
-										post={post}
-										tags={tags}
-										variant="card"
-										headingLevel={3}
-									/>
-								))}
-							</div>
-						</div>
-					</section>
-				)}
+				<HomeFeed
+					trending={trendingItems}
+					latest={latestItems}
+					popular={trendingItems.slice(0, 3)}
+					tags={sidebarTags}
+					categories={sidebarCategories}
+				/>
+
+				<CommunitySection featured={featured} news={news} />
 			</>
 		)
 	}
 </Base>
 
 <style>
-	.home-intro {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) auto;
-		align-items: end;
-		gap: var(--spacing-6) var(--spacing-8);
+	.masthead {
+		padding-block: clamp(1.5rem, 1rem + 1.5vw, 2.5rem);
 	}
 
-	/* Lifts the pill from the line box's bottom onto the last line's baseline */
-	.home-intro__rss {
-		margin-block-end: var(--spacing-2);
+	.masthead__inner {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: flex-end;
+		justify-content: space-between;
+		gap: var(--spacing-4) var(--spacing-8);
 	}
 
-	@media (max-width: 720px) {
-		.home-intro {
-			grid-template-columns: minmax(0, 1fr);
-		}
+	.masthead__text {
+		min-width: 0;
+	}
 
-		.home-intro__rss {
-			justify-self: start;
-			margin-block-end: 0;
+	.masthead__tagline {
+		margin-top: var(--spacing-2);
+		max-width: 26ch;
+		font-family: var(--font-heading);
+		font-size: clamp(1.5rem, 1.15rem + 1.5vw, 2.5rem);
+		font-weight: var(--font-weight-display);
+		line-height: var(--leading-tight);
+		letter-spacing: var(--tracking-tight);
+		color: var(--color-text);
+		text-wrap: balance;
+	}
+
+	@media (max-width: 640px) {
+		.masthead__inner {
+			align-items: flex-start;
 		}
 	}
 </style>
+

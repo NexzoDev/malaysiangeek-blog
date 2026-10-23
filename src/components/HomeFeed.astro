@@ -1,0 +1,361 @@
+---
+import type { ContentEntry, InferCollectionData } from "emdash";
+import PostCard from "./PostCard.astro";
+
+interface FeedItem {
+	post: ContentEntry<InferCollectionData<"posts">>;
+	tags: Array<{ slug: string; label: string }>;
+	category: { slug: string; label: string } | null;
+}
+
+interface Term {
+	slug: string;
+	label: string;
+}
+
+interface Props {
+	trending: FeedItem[];
+	latest: FeedItem[];
+	popular: FeedItem[];
+	tags: Term[];
+	categories: Term[];
+}
+
+const { trending, latest, popular, tags, categories } = Astro.props;
+---
+
+<section class="band section home-feed" aria-labelledby="feed-heading">
+	<div class="frame home-feed__grid">
+		<div class="home-feed__main">
+			<div class="feed-head">
+				<h2 id="feed-heading" class="section-head__title">Stories</h2>
+				<div class="feed-toggle" role="group" aria-label="Sort articles">
+					<button
+						type="button"
+						class="feed-toggle__btn is-active"
+						data-feed-tab="trending"
+						aria-pressed="true"
+					>
+						Trending
+					</button>
+					<button
+						type="button"
+						class="feed-toggle__btn"
+						data-feed-tab="latest"
+						aria-pressed="false"
+					>
+						Latest
+					</button>
+				</div>
+			</div>
+
+			<div class="feed-list" data-feed-panel="trending">
+				{trending.map(({ post, tags: postTags, category }) => (
+					<PostCard
+						post={post}
+						tags={postTags}
+						category={category}
+						variant="feed"
+						headingLevel={3}
+					/>
+				))}
+			</div>
+			<div class="feed-list" data-feed-panel="latest" hidden>
+				{latest.map(({ post, tags: postTags, category }) => (
+					<PostCard
+						post={post}
+						tags={postTags}
+						category={category}
+						variant="feed"
+						headingLevel={3}
+					/>
+				))}
+			</div>
+
+			<a href="/posts" class="arrow-link home-feed__more">
+				View all posts
+				<svg
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="1.75"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					aria-hidden="true"
+				>
+					<path d="M5 12h14" />
+					<path d="m12 5 7 7-7 7" />
+				</svg>
+			</a>
+		</div>
+
+		<aside class="home-sidebar" aria-labelledby="sidebar-heading">
+			<div class="sidebar-block">
+				<h2 id="sidebar-heading" class="eyebrow sidebar-block__title">
+					<span class="sidebar-block__spark" aria-hidden="true"></span>
+					Trending topics
+				</h2>
+				<ul class="sidebar-tags">
+					{tags.map((tag) => (
+						<li>
+							<a href={`/tag/${tag.slug}`} class="chip">#{tag.label}</a>
+						</li>
+					))}
+				</ul>
+			</div>
+
+			<div class="sidebar-block">
+				<h2 class="eyebrow sidebar-block__title">Categories</h2>
+				<ul class="sidebar-cats">
+					{categories.map((cat) => (
+						<li>
+							<a href={`/category/${cat.slug}`}>{cat.label}</a>
+						</li>
+					))}
+				</ul>
+			</div>
+
+			<div class="sidebar-block">
+				<h2 class="eyebrow sidebar-block__title">Popular posts</h2>
+				<ol class="sidebar-popular">
+					{popular.map(({ post }, index) => (
+						<li>
+							<span class="sidebar-popular__num">
+								{String(index + 1).padStart(2, "0")}
+							</span>
+							<a href={`/posts/${post.id}`}>
+								{post.data.title || "Untitled"}
+							</a>
+						</li>
+					))}
+				</ol>
+			</div>
+		</aside>
+	</div>
+</section>
+
+<style>
+	.home-feed {
+		padding-block: clamp(2.5rem, 1.75rem + 2.5vw, 4rem);
+	}
+
+	.home-feed__grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) 320px;
+		gap: clamp(1.5rem, 1rem + 3vw, 3rem);
+		align-items: start;
+	}
+
+	.home-feed__main {
+		min-width: 0;
+	}
+
+	.feed-head {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--spacing-4);
+		margin-bottom: var(--spacing-6);
+	}
+
+	.feed-toggle {
+		display: inline-flex;
+		gap: 2px;
+		padding: 3px;
+		border-radius: var(--radius-full);
+		background: var(--color-fill);
+	}
+
+	.feed-toggle__btn {
+		padding: 6px 16px;
+		border: 0;
+		border-radius: var(--radius-full);
+		background: transparent;
+		color: var(--color-text-secondary);
+		font: inherit;
+		font-size: var(--font-size-sm);
+		font-weight: 500;
+		cursor: pointer;
+		transition:
+			color var(--transition-fast),
+			background-color var(--transition-fast),
+			box-shadow var(--transition-fast);
+	}
+
+	.feed-toggle__btn:hover {
+		color: var(--color-text);
+	}
+
+	.feed-toggle__btn.is-active {
+		background: var(--color-surface);
+		color: var(--color-text);
+		box-shadow:
+			inset 0 0 0 1px var(--color-border),
+			var(--shadow-sm);
+	}
+
+	.feed-list {
+		display: grid;
+		gap: var(--spacing-5);
+	}
+
+	.feed-list[hidden] {
+		display: none;
+	}
+
+	.feed-list:not([hidden]) {
+		animation: feed-reveal 380ms var(--ease-out) both;
+	}
+
+	@keyframes feed-reveal {
+		from {
+			opacity: 0;
+			transform: translateY(10px);
+		}
+		to {
+			opacity: 1;
+			transform: none;
+		}
+	}
+
+	.home-feed__more {
+		margin-top: var(--spacing-6);
+	}
+
+	.home-sidebar {
+		position: sticky;
+		top: var(--spacing-6);
+		display: grid;
+		gap: var(--spacing-5);
+	}
+
+	.sidebar-block {
+		padding: var(--spacing-5);
+		border-radius: var(--radius-xl);
+		background: var(--color-surface);
+		box-shadow: var(--shadow-card);
+	}
+
+	.sidebar-block__title {
+		display: flex;
+		align-items: center;
+		gap: var(--spacing-2);
+		margin-bottom: var(--spacing-4);
+	}
+
+	.sidebar-block__spark {
+		width: 7px;
+		height: 7px;
+		border-radius: var(--radius-full);
+		background: var(--color-accent);
+		box-shadow: 0 0 0 3px var(--color-accent-soft);
+	}
+
+	.sidebar-tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
+		list-style: none;
+	}
+
+	.sidebar-cats {
+		display: grid;
+		gap: 2px;
+		list-style: none;
+	}
+
+	.sidebar-cats a {
+		display: flex;
+		justify-content: space-between;
+		gap: var(--spacing-3);
+		padding: 8px 0;
+		border-block-end: 1px solid var(--color-border-subtle);
+		color: var(--color-text-secondary);
+		text-decoration: none;
+		font-size: var(--font-size-sm);
+		transition: color var(--transition-fast);
+	}
+
+	.sidebar-cats li:last-child a {
+		border-block-end: 0;
+	}
+
+	.sidebar-cats a:hover {
+		color: var(--color-brand);
+	}
+
+	.sidebar-popular {
+		display: grid;
+		gap: var(--spacing-3);
+		list-style: none;
+	}
+
+	.sidebar-popular li {
+		display: grid;
+		grid-template-columns: 1.5rem minmax(0, 1fr);
+		gap: var(--spacing-2);
+		align-items: start;
+	}
+
+	.sidebar-popular__num {
+		padding-top: 2px;
+		font-family: var(--font-mono);
+		font-size: var(--font-size-label);
+		color: var(--color-muted);
+	}
+
+	.sidebar-popular a {
+		color: var(--color-text);
+		text-decoration: none;
+		font-size: var(--font-size-sm);
+		line-height: var(--leading-snug);
+		transition: color var(--transition-fast);
+	}
+
+	.sidebar-popular a:hover {
+		color: var(--color-brand);
+	}
+
+	@media (max-width: 960px) {
+		.home-feed__grid {
+			grid-template-columns: minmax(0, 1fr);
+		}
+
+		.home-sidebar {
+			position: static;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+
+	@media (max-width: 560px) {
+		.home-sidebar {
+			grid-template-columns: minmax(0, 1fr);
+		}
+	}
+</style>
+
+<script>
+	const tabs = Array.from(
+		document.querySelectorAll<HTMLButtonElement>("[data-feed-tab]"),
+	);
+	const panels = Array.from(
+		document.querySelectorAll<HTMLElement>("[data-feed-panel]"),
+	);
+
+	tabs.forEach((tab) => {
+		tab.addEventListener("click", () => {
+			const key = tab.getAttribute("data-feed-tab");
+			tabs.forEach((item) => {
+				const active = item === tab;
+				item.classList.toggle("is-active", active);
+				item.setAttribute("aria-pressed", active ? "true" : "false");
+			});
+			panels.forEach((panel) => {
+				const active = panel.getAttribute("data-feed-panel") === key;
+				if (active) panel.removeAttribute("hidden");
+				else panel.setAttribute("hidden", "");
+			});
+		});
+	});
+</script>

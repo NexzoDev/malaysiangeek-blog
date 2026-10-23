@@ -1,0 +1,141 @@
+---
+import type { ContentEntry, InferCollectionData } from "emdash";
+import FeaturedCard from "./FeaturedCard.astro";
+
+interface FeaturedItem {
+	post: ContentEntry<InferCollectionData<"posts">>;
+	category?: { slug: string; label: string } | null;
+}
+
+interface Props {
+	items: FeaturedItem[];
+}
+
+const { items } = Astro.props;
+
+// Slot order: main (centre), left top, left bottom, right top, right bottom.
+const [main, leftTop, leftBottom, rightTop, rightBottom] = items;
+---
+
+{
+	main && (
+		<section class="band featured" aria-labelledby="featured-heading">
+			<div class="frame">
+				<div class="featured-head">
+					<h2 id="featured-heading" class="eyebrow">
+						Featured
+					</h2>
+				</div>
+
+				<div class="featured-grid">
+					<div class="featured-col featured-col--side">
+						{leftTop && (
+							<FeaturedCard
+								post={leftTop.post}
+								category={leftTop.category}
+								variant="side"
+							/>
+						)}
+						{leftBottom && (
+							<FeaturedCard
+								post={leftBottom.post}
+								category={leftBottom.category}
+								variant="side"
+							/>
+						)}
+					</div>
+
+					<div class="featured-col featured-col--main">
+						<FeaturedCard
+							post={main.post}
+							category={main.category}
+							variant="main"
+						/>
+					</div>
+
+					<div class="featured-col featured-col--side">
+						{rightTop && (
+							<FeaturedCard
+								post={rightTop.post}
+								category={rightTop.category}
+								variant="side"
+							/>
+						)}
+						{rightBottom && (
+							<FeaturedCard
+								post={rightBottom.post}
+								category={rightBottom.category}
+								variant="side"
+							/>
+						)}
+					</div>
+				</div>
+			</div>
+		</section>
+	)
+}
+
+<style>
+	.featured {
+		padding-block: var(--spacing-8) clamp(2.5rem, 1.75rem + 2.5vw, 4rem);
+	}
+
+	.featured-head {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: var(--spacing-3);
+		margin-bottom: var(--spacing-5);
+	}
+
+	.featured-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr) minmax(0, 1fr);
+		gap: var(--spacing-5);
+		height: clamp(520px, 44vw, 620px);
+	}
+
+	.featured-col {
+		display: grid;
+		gap: var(--spacing-5);
+		min-height: 0;
+	}
+
+	.featured-col--side {
+		grid-template-rows: repeat(2, minmax(0, 1fr));
+	}
+
+	.featured-col--main {
+		grid-template-rows: minmax(0, 1fr);
+	}
+
+	@media (min-width: 861px) {
+		/* A lone side card fills the column instead of leaving a gap. */
+		.featured-col--side > :global(:only-child) {
+			grid-row: span 2;
+		}
+	}
+
+	@media (max-width: 860px) {
+		.featured-grid {
+			grid-template-columns: minmax(0, 1fr);
+			height: auto;
+		}
+
+		.featured-col--main {
+			order: -1;
+		}
+
+		.featured-col--side {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			grid-template-rows: none;
+		}
+	}
+
+	@media (max-width: 560px) {
+		.featured-col--side {
+			grid-template-columns: minmax(0, 1fr);
+		}
+	}
+</style>

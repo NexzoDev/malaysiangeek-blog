@@ -64,17 +64,20 @@ A blog with posts, pages, categories, tags, full-text search, and RSS. Designed 
 - `posts` collection: `title`, `featured_image`, `content` (Portable Text), `excerpt` (text).
 - `pages` collection: `title`, `content` (Portable Text). Used for `/about` etc.
 - Taxonomies: `category`, `tag`.
-- Single `primary` menu (Home, About, Posts by default).
+- Single `primary` menu (Home, News, Reviews, Misc, About by default).
+- Categories seeded as `news`, `reviews`, `misc`.
 
-Site settings have `title` and `tagline`. The title renders in the header, the home page intro, and the footer; the tagline renders under the title in the home page intro and in the footer.
+Site settings have `title` and `tagline`. The header and footer use the image logo (`/logo.webp` or the CMS `logo` setting) with the title as alt text; the tagline renders in the home masthead and the footer.
 
 ## Visual character
 
-The palette is neutral: an off-white canvas (`--color-bg`), white surfaces (`--color-surface`), and near-black ink. `--color-brand` is ink too -- it drives buttons, links, focus rings, and the site monogram. Dark mode inverts the same scale.
+The site is an **industrial dark** theme: a fixed brick-wall texture (`/bg-repeat.webp`) under a 70–80% dark overlay, with the left and right edges fading to black. Content sits on near-black surfaces (`--color-bg` `#050505`, `--color-surface` `#111111`) with `#333` hairlines. Dark is the default; a light "graphite paper" variant ships for the header/footer theme toggle.
 
-Every page sits in a frame: two hairline rails run the full height of the page, and each full-width section (`.band`) is ruled off with a hairline that meets the rails at a small crosshair. Cards are white with a 1px ring and a soft shadow, and their images are inset so the corners stay concentric (`--radius-xl` card = `--radius-lg` image + `--card-padding`).
+**MalaysianGeek purple** (`#9b1cb6`) is the brand colour and drives buttons, links, active nav, category labels, and focus rings. A **tech red** accent (`--color-accent`, `#fe0001`) is reserved for live/trending/featured badges only -- never for body text or broad surfaces.
 
-Type is **Inter** on `--font-body` for everything, with weight and size carrying the hierarchy. **JetBrains Mono** on `--font-mono` sets code and the small uppercase labels (`.eyebrow`) used for section names and meta. Page titles use `--font-size-display` with tight tracking; the home intro pairs the site title with the tagline as a muted second line.
+Every page still sits in the frame: two hairline rails run the full height, and each full-width section (`.band`) is ruled off with a crosshair. Cards are `--color-surface` with a hairline ring and a soft shadow; on hover they lift 8px and their image zooms.
+
+Type pairs **Playfair Display** (via `--font-heading`) for headings with **Inter** (`--font-body`) for body and **JetBrains Mono** (`--font-mono`) for code and uppercase `.eyebrow` labels. The homepage is a magazine layout: `HeroCarousel` (three-panel featured gallery, 5s auto-rotate, dots), `HomeFeed` (Trending/Latest switcher, horizontal `feed` cards, "Trending topics" sidebar), and `CommunitySection` (community CTA, random news, links + newsletter form).
 
 The article layout is the standout feature: a meta rail (authors, date, reading time), a 680px body column, and a rail with the table of contents and sidebar widgets. Below 1100px it collapses to one column, the table of contents is hidden, and the widgets move under the article. Don't flatten it on desktop -- the layout signals "this is something to read".
 
@@ -82,18 +85,20 @@ The article layout is the standout feature: a meta rail (authors, date, reading 
 
 Design tokens live in `src/styles/tokens.css` with their default values. To restyle the site, override tokens in `src/styles/theme.css` -- declarations there are unlayered, so they always beat the `@layer base` defaults. Don't edit `tokens.css` or `Base.astro` for visual changes.
 
-Colours are defined with `light-dark(<light>, <dark>)`, so each token carries both modes. Overriding with a plain colour changes light and dark at once; use `light-dark()` in the override to keep them distinct. There is no separate dark palette to maintain. To give the site a colour, set `--color-brand`, `--color-brand-hover`, and `--color-on-brand` together: `--color-on-brand` defaults to near-black in dark mode, to sit on the light ink brand.
+Colours are defined with `light-dark(<light>, <dark>)`, so each token carries both modes. Overriding with a plain colour changes light and dark at once; use `light-dark()` in the override to keep them distinct. There is no separate dark palette to maintain. The brand tokens are `--color-brand` (purple), `--color-brand-hover`, `--color-on-brand` (white), and `--color-brand-ring`; the secondary accent is `--color-accent` plus `--color-accent-soft`, used only for badges. The brick backdrop reads `--backdrop-overlay` and `--backdrop-edge`.
 
-Webfonts are configured in `astro.config.mjs` under `fonts:`. To swap the body face, change the `name:` for the entry bound to `cssVariable: "--font-body"`. Good alternatives: Geist, IBM Plex Sans, Söhne (if you have a licence), Public Sans. If you want a serif-bodied blog, swap to a humanist serif like Source Serif, Crimson Pro, or Lora -- but then also raise `--font-size-base` to `1.0625rem` for readability. To give headings their own face (or use a system font) without touching the font pipeline, override `--font-heading` or `--font-body` in `theme.css`.
+Webfonts are configured in `astro.config.mjs` under `fonts:`. Body is Inter (`--font-body`), headings are Playfair Display (`--font-heading`), code is JetBrains Mono (`--font-mono`). To swap a face, change the `name:` for the entry bound to that `cssVariable` and keep the `<Font>` tags in `Base.astro` in sync.
 
-`Base.astro` defines the shared building blocks every page uses: `.frame` (content width, aligned with the rails), `.band` and `.section` (full-width sections), `.intro`, `.eyebrow`, `.chip`, `.btn`, and `.post-grid`. Posts render through `src/components/PostCard.astro` (`card`, `feature`, and `row` variants) and bylines through `src/components/Byline.astro`.
+`Base.astro` defines the shared building blocks every page uses: `.frame` (content width, aligned with the rails), `.band` and `.section` (full-width sections), `.intro`, `.eyebrow`, `.chip`, `.btn`, and `.post-grid`. Posts render through `src/components/PostCard.astro` (`card`, `feature`, `feed`, and `row` variants), with `HeroCarousel.astro`, `HomeFeed.astro`, and `CommunitySection.astro` composing the homepage. Bylines render through `src/components/Byline.astro`.
 
 CSS variables worth knowing (see `tokens.css` for the full list):
 
 - `--color-brand`, `--color-brand-hover`, `--color-on-brand`, `--color-brand-ring`
+- `--color-accent`, `--color-accent-soft` -- tech-red badge accent
 - `--color-bg`, `--color-surface`, `--color-fill`, `--color-text`, `--color-text-secondary`, `--color-muted`, `--color-border`, `--color-ring`
+- `--backdrop-overlay`, `--backdrop-edge` -- brick-wall backdrop layers
 - `--font-body`, `--font-heading`, `--font-mono`
-- `--font-weight-heading` / `--font-weight-display` (both 600) -- heading weights; lower them if you switch to a serif
+- `--font-weight-heading` (600) / `--font-weight-display` (700) -- heading weights
 - `--font-size-display` -- page titles
 - `--radius-sm` / `--radius` / `--radius-lg` / `--radius-xl` / `--radius-full`, `--card-padding`
 - `--shadow-card`, `--shadow-card-hover`
@@ -105,8 +110,8 @@ CSS variables worth knowing (see `tokens.css` for the full list):
 
 ## What not to do
 
-- Don't add a second accent colour or coloured section backgrounds. If the site needs a colour, it goes in `--color-brand`.
-- Don't replace Inter with a display sans (Bebas, Anton, etc.). Headings rely on weight and size, not novelty faces.
+- Don't use `--color-accent` (tech red) for anything except live/trending/featured badges -- no coloured section backgrounds.
+- Don't replace Playfair Display with a novelty display face (Bebas, Anton, etc.). Headings are editorial serif; body stays Inter.
 - Don't break the frame: new sections should be `.band` elements with their content in a `.frame`, so the rails and rules line up.
 - Don't collapse the article rails on desktop -- they're part of the reading experience.
 - Don't use stock blog copy ("Welcome to my blog", "Stay tuned for more"). Write a real tagline that says what this blog is about.

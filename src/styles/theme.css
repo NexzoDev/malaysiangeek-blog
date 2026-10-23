@@ -31,4 +31,129 @@
 */
 
 :root {
+	/*
+	 * Industrial dark palette. The second value of each light-dark() pair
+	 * is the dark (default) theme; the first is the light "graphite
+	 * paper" variant, kept so the footer theme switcher still works.
+	 */
+	--color-bg: light-dark(#f4f4f5, #050505);
+	--color-surface: light-dark(#ffffff, #161616);
+	--color-fill: light-dark(#ececed, #202020);
+	--color-fill-strong: light-dark(#e1e1e3, #2a2a2a);
+	--color-bg-subtle: var(--color-fill);
+	--color-text: light-dark(#141416, #ffffff);
+	--color-text-secondary: light-dark(#4a4a4f, #a0a0a0);
+	--color-muted: light-dark(#6b6b70, #8a8a8a);
+	--color-border: light-dark(#dcdce0, #333333);
+	--color-border-subtle: light-dark(#e8e8ea, #242424);
+	--color-border-strong: light-dark(#c6c6cc, #444444);
+	--color-ring: light-dark(rgb(0 0 0 / 0.08), rgb(255 255 255 / 0.1));
+	--color-media-outline: light-dark(rgb(0 0 0 / 0.1), rgb(255 255 255 / 0.12));
+	--color-shadow: light-dark(rgb(0 0 0 / 0.06), rgb(0 0 0 / 0.5));
+	--color-shadow-strong: light-dark(rgb(0 0 0 / 0.12), rgb(0 0 0 / 0.7));
+
+	/* Brand: MalaysianGeek purple */
+	--color-brand: light-dark(#7d1594, #9b1cb6);
+	--color-brand-hover: light-dark(#5f0f72, #b74dd1);
+	--color-on-brand: #ffffff;
+	--color-brand-ring: color-mix(in srgb, var(--color-brand) 28%, transparent);
+
+	/* Secondary accent: tech red. Use sparingly (badges, live, trending). */
+	--color-accent: light-dark(#d40000, #fe0001);
+	--color-accent-soft: color-mix(in srgb, var(--color-accent) 16%, transparent);
+
+	/* Brick-wall backdrop layers (see the body rule below) */
+	--backdrop-overlay: light-dark(rgba(244, 244, 245, 0.85), rgba(5, 5, 5, 0.62));
+	--backdrop-edge: light-dark(#f4f4f5, #000000);
+
+	/* Typography: editorial serif headings, Inter body, JetBrains Mono code */
+	--font-heading: "Playfair Display", Georgia, "Times New Roman", serif;
+	--font-weight-heading: 600;
+	--font-weight-display: 700;
+	--font-size-display: clamp(2.5rem, 1.8rem + 3vw, 4rem);
+	--tracking-tight: -0.015em;
+	--tracking-snug: -0.01em;
+
+	/* Tighter, more industrial corners */
+	--radius-sm: 5px;
+	--radius: 7px;
+	--radius-lg: 10px;
+	--radius-xl: 14px;
+
+	/* Motion */
+	--transition-slow: 400ms var(--ease-out);
+}
+
+/* The head script adds .dark by default; light and system remain available. */
+:root.dark {
+	color-scheme: dark;
+}
+
+:root.light {
+	color-scheme: light;
+}
+
+/*
+ * Brick-wall backdrop: the texture tiles at full size, a dark overlay
+ * dims it so text stays readable, and the left/right edges fade to black
+ * so content feels like it sits on a lit wall.
+ */
+body {
+	background-color: var(--color-bg);
+	background-image:
+		linear-gradient(
+			to right,
+			var(--backdrop-edge) 0%,
+			transparent 12%,
+			transparent 88%,
+			var(--backdrop-edge) 100%
+		),
+		linear-gradient(var(--backdrop-overlay), var(--backdrop-overlay)),
+		url("/bg-repeat.webp");
+	background-repeat: no-repeat, no-repeat, repeat;
+	background-attachment: fixed, fixed, fixed;
+	background-position: center top;
+	background-size:
+		100% 100%,
+		100% 100%,
+		auto;
+}
+
+@media (max-width: 768px) {
+	body {
+		/* Fixed backgrounds are janky on mobile; let the texture scroll. */
+		background-attachment: scroll, scroll, scroll;
+	}
+}
+
+/* Article header category label */
+.post-header__category a {
+	color: var(--color-brand);
+	text-decoration: none;
+}
+
+.post-header__category a:hover {
+	text-decoration: underline;
+}
+
+/* Article body links pick up the brand colour */
+.prose a:where(:not([class*="emdash"])) {
+	color: var(--color-brand);
+	text-decoration-color: color-mix(
+		in srgb,
+		var(--color-brand) 40%,
+		transparent
+	);
+}
+
+.prose a:where(:not([class*="emdash"])):hover {
+	text-decoration-color: currentColor;
+}
+
+/* Primary buttons glow in the brand purple on hover/focus */
+.btn:not(.btn--ghost):hover,
+.btn:not(.btn--ghost):focus-visible {
+	box-shadow:
+		0 0 0 3px var(--color-brand-ring),
+		0 10px 30px -10px var(--color-brand);
 }

@@ -7,8 +7,8 @@
 		"author": "EmDash"
 	},
 	"settings": {
-		"title": "My Blog",
-		"tagline": "Thoughts on building for the web"
+		"title": "MalaysianGeek",
+		"tagline": "The Geek Fix For Malaysians"
 	},
 	"collections": [
 		{
@@ -41,6 +41,11 @@
 					"slug": "excerpt",
 					"label": "Excerpt",
 					"type": "text"
+				},
+				{
+					"slug": "featured",
+					"label": "Featured",
+					"type": "boolean"
 				}
 			]
 		},
@@ -76,16 +81,16 @@
 			"collections": ["posts"],
 			"terms": [
 				{
-					"slug": "development",
-					"label": "Development"
+					"slug": "news",
+					"label": "News"
 				},
 				{
-					"slug": "design",
-					"label": "Design"
+					"slug": "reviews",
+					"label": "Reviews"
 				},
 				{
-					"slug": "notes",
-					"label": "Notes"
+					"slug": "misc",
+					"label": "Misc"
 				}
 			]
 		},
@@ -140,13 +145,23 @@
 				},
 				{
 					"type": "custom",
-					"label": "About",
-					"url": "/pages/about"
+					"label": "News",
+					"url": "/category/news"
 				},
 				{
 					"type": "custom",
-					"label": "Posts",
-					"url": "/posts"
+					"label": "Reviews",
+					"url": "/category/reviews"
+				},
+				{
+					"type": "custom",
+					"label": "Misc",
+					"url": "/category/misc"
+				},
+				{
+					"type": "custom",
+					"label": "About",
+					"url": "/pages/about"
 				}
 			]
 		}
@@ -319,6 +334,7 @@
 				"data": {
 					"title": "Building for the Long Term",
 					"excerpt": "The frameworks will change. The databases will change. What survives is the clarity of your thinking.",
+					"featured": true,
 					"featured_image": {
 						"$media": {
 							"url": "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1200&h=800&fit=crop",
@@ -411,7 +427,7 @@
 					}
 				],
 				"taxonomies": {
-					"category": ["development"],
+					"category": ["reviews"],
 					"tag": ["opinion"]
 				}
 			},
@@ -422,6 +438,7 @@
 				"data": {
 					"title": "The Case for Static",
 					"excerpt": "Static sites aren't a step backwards. They're what you get when you take performance and simplicity seriously.",
+					"featured": true,
 					"featured_image": {
 						"$media": {
 							"url": "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=1200&h=800&fit=crop",
@@ -498,7 +515,7 @@
 					}
 				],
 				"taxonomies": {
-					"category": ["development"],
+					"category": ["reviews"],
 					"tag": ["webdev", "opinion"]
 				}
 			},
@@ -509,6 +526,7 @@
 				"data": {
 					"title": "Learning in Public",
 					"excerpt": "Writing about what you're learning is the fastest way to find out what you don't actually understand.",
+					"featured": true,
 					"featured_image": {
 						"$media": {
 							"url": "https://images.unsplash.com/photo-1432821596592-e2c18b78144f?w=1200&h=800&fit=crop",
@@ -580,7 +598,7 @@
 					]
 				},
 				"taxonomies": {
-					"category": ["notes"],
+					"category": ["misc"],
 					"tag": ["opinion"]
 				}
 			},
@@ -591,6 +609,7 @@
 				"data": {
 					"title": "Small Tools, Big Impact",
 					"excerpt": "The best developer tools do one thing well and get out of your way. A love letter to focused software.",
+					"featured": true,
 					"featured_image": {
 						"$media": {
 							"url": "https://images.unsplash.com/photo-1575026615908-666710ae5e47?w=1200&h=800&fit=crop",
@@ -662,7 +681,7 @@
 					]
 				},
 				"taxonomies": {
-					"category": ["development"],
+					"category": ["reviews"],
 					"tag": ["tools"]
 				}
 			},
@@ -673,6 +692,7 @@
 				"data": {
 					"title": "Designing with Constraints",
 					"excerpt": "Limitations aren't obstacles to creativity. They're the structure that makes creativity possible.",
+					"featured": true,
 					"featured_image": {
 						"$media": {
 							"url": "https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?w=1200&h=800&fit=crop",
@@ -744,7 +764,7 @@
 					]
 				},
 				"taxonomies": {
-					"category": ["design"],
+					"category": ["reviews"],
 					"tag": ["creativity"]
 				}
 			},
@@ -755,6 +775,7 @@
 				"data": {
 					"title": "A Weekend with a Side Project",
 					"excerpt": "No stakeholders, no deadlines, no Jira tickets. Just you and a dumb idea that might turn into something.",
+					"featured": true,
 					"featured_image": {
 						"$media": {
 							"url": "https://images.unsplash.com/photo-1542831371-29b0f74f9713?w=1200&h=800&fit=crop",
@@ -826,7 +847,7 @@
 					]
 				},
 				"taxonomies": {
-					"category": ["development"],
+					"category": ["reviews"],
 					"tag": ["creativity"]
 				}
 			},
@@ -837,6 +858,7 @@
 				"data": {
 					"title": "Notes on Simplicity",
 					"excerpt": "Simplicity isn't the absence of complexity. It's the result of understanding a problem well enough to solve it cleanly.",
+					"featured": true,
 					"featured_image": {
 						"$media": {
 							"url": "https://images.unsplash.com/photo-1559051668-e1fa58f25786?w=1200&h=800&fit=crop",
@@ -908,8 +930,308 @@
 					]
 				},
 				"taxonomies": {
-					"category": ["notes"],
+					"category": ["misc"],
 					"tag": ["opinion"]
+				}
+			},
+			{
+				"id": "post-8",
+				"slug": "rtx-5090-kuala-lumpur",
+				"status": "published",
+				"data": {
+					"title": "Hands-on with the RTX 5090 in Kuala Lumpur",
+					"excerpt": "We put the new flagship through Malaysian heat, local pricing, and a 4K ultrawide.",
+					"featured": true,
+					"featured_image": {
+						"$media": {
+							"url": "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=1200&h=800&fit=crop",
+							"alt": "Graphics card installed in a desktop PC",
+							"filename": "rtx-5090-kuala-lumpur.jpg"
+						}
+					},
+					"content": [
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "A practical look at what the RTX 5090 means for builders in Malaysia, from power draw and thermals to the price you will actually pay locally.",
+									"_key": "k1"
+								}
+							],
+							"_key": "k0"
+						},
+						{
+							"_type": "block",
+							"style": "h2",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Malaysian heat, real numbers",
+									"_key": "k3"
+								}
+							],
+							"_key": "k2"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "We ran the card through a week of 32°C afternoons, a 4K ultrawide, and a case that is smaller than it should be. The results say more about airflow than raw horsepower.",
+									"_key": "k5"
+								}
+							],
+							"_key": "k4"
+						}
+					]
+				},
+				"bylines": [{ "byline": "byline-editorial" }],
+				"taxonomies": {
+					"category": ["reviews"],
+					"tag": ["tools"]
+				}
+			},
+			{
+				"id": "post-9",
+				"slug": "raspberry-pi-home-lab",
+				"status": "published",
+				"data": {
+					"title": "Building a Raspberry Pi home lab",
+					"excerpt": "One tiny board, a handful of containers, and a very patient router.",
+					"featured": true,
+					"featured_image": {
+						"$media": {
+							"url": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&h=800&fit=crop",
+							"alt": "Circuit board with ribbon cables",
+							"filename": "raspberry-pi-home-lab.jpg"
+						}
+					},
+					"content": [
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "How I turned a Raspberry Pi into a home lab for DNS, backups, and a few self-hosted tools without waking the whole house.",
+									"_key": "k1"
+								}
+							],
+							"_key": "k0"
+						},
+						{
+							"_type": "block",
+							"style": "h2",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Start with the boring parts",
+									"_key": "k3"
+								}
+							],
+							"_key": "k2"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Static IPs, a decent power supply, and a labelled SD card save more time than any clever container setup. Everything else can come later.",
+									"_key": "k5"
+								}
+							],
+							"_key": "k4"
+						}
+					]
+				},
+				"bylines": [{ "byline": "byline-editorial" }],
+				"taxonomies": {
+					"category": ["misc"],
+					"tag": ["tools"]
+				}
+			},
+			{
+				"id": "post-10",
+				"slug": "malaysia-tech-scene-2026",
+				"status": "published",
+				"data": {
+					"title": "Malaysia's tech scene in 2026",
+					"excerpt": "What changed, what stalled, and what Malaysian builders should watch next.",
+					"featured": true,
+					"featured_image": {
+						"$media": {
+							"url": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200&h=800&fit=crop",
+							"alt": "Glowing network globe",
+							"filename": "malaysia-tech-scene-2026.jpg"
+						}
+					},
+					"content": [
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "A roundup of the local hardware, software, and community stories that shaped the year, and the ones worth following into the next.",
+									"_key": "k1"
+								}
+							],
+							"_key": "k0"
+						},
+						{
+							"_type": "block",
+							"style": "h2",
+							"children": [
+								{
+									"_type": "span",
+									"text": "The quiet wins",
+									"_key": "k3"
+								}
+							],
+							"_key": "k2"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "The most useful changes rarely make headlines. Better local shipping, cheaper boards, and more meetups doing real work all add up.",
+									"_key": "k5"
+								}
+							],
+							"_key": "k4"
+						}
+					]
+				},
+				"bylines": [{ "byline": "byline-editorial" }],
+				"taxonomies": {
+					"category": ["news"],
+					"tag": ["opinion"]
+				}
+			},
+			{
+				"id": "post-11",
+				"slug": "mechanical-keyboards-worth-your-ringgit",
+				"status": "published",
+				"data": {
+					"title": "Mechanical keyboards worth your ringgit",
+					"excerpt": "Three boards that get the basics right without a novelty-keycap tax.",
+					"featured": true,
+					"featured_image": {
+						"$media": {
+							"url": "https://images.unsplash.com/photo-1547082299-de196ea013d6?w=1200&h=800&fit=crop",
+							"alt": "Mechanical keyboard on a desk",
+							"filename": "mechanical-keyboards-ringgit.jpg"
+						}
+					},
+					"content": [
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "A buyer's guide to mechanical keyboards available locally, from budget hot-swap boards to enthusiast kits that will outlast three laptops.",
+									"_key": "k1"
+								}
+							],
+							"_key": "k0"
+						},
+						{
+							"_type": "block",
+							"style": "h2",
+							"children": [
+								{
+									"_type": "span",
+									"text": "What actually matters",
+									"_key": "k3"
+								}
+							],
+							"_key": "k2"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Switches you can replace, a case that does not ping, and a layout you can actually buy keycaps for. Everything else is decoration.",
+									"_key": "k5"
+								}
+							],
+							"_key": "k4"
+						}
+					]
+				},
+				"bylines": [{ "byline": "byline-editorial" }],
+				"taxonomies": {
+					"category": ["reviews"],
+					"tag": ["tools"]
+				}
+			},
+			{
+				"id": "post-12",
+				"slug": "a-weekend-with-a-3d-printer",
+				"status": "published",
+				"data": {
+					"title": "A weekend with a 3D printer",
+					"excerpt": "Two days, one spool of filament, and a growing pile of failed test prints.",
+					"featured": true,
+					"featured_image": {
+						"$media": {
+							"url": "https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=1200&h=800&fit=crop",
+							"alt": "3D printer creating a part",
+							"filename": "weekend-3d-printer.jpg"
+						}
+					},
+					"content": [
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "What I learned setting up a budget 3D printer in a Malaysian apartment, including the parts worth upgrading and the ones to leave alone.",
+									"_key": "k1"
+								}
+							],
+							"_key": "k0"
+						},
+						{
+							"_type": "block",
+							"style": "h2",
+							"children": [
+								{
+									"_type": "span",
+									"text": "Level the bed. Then level it again.",
+									"_key": "k3"
+								}
+							],
+							"_key": "k2"
+						},
+						{
+							"_type": "block",
+							"style": "normal",
+							"children": [
+								{
+									"_type": "span",
+									"text": "The first hour is calibration. The second hour is re-calibration. By the third, you are printing a bracket that could have been bought for five ringgit, and enjoying it.",
+									"_key": "k5"
+								}
+							],
+							"_key": "k4"
+						}
+					]
+				},
+				"bylines": [{ "byline": "byline-guest", "roleLabel": "Guest build" }],
+				"taxonomies": {
+					"category": ["misc"],
+					"tag": ["creativity"]
 				}
 			},
 			{

@@ -27,7 +27,7 @@ const {
 } = await getEmDashCollection("posts", {
 	where: { category: term.slug },
 	orderBy: { published_at: "desc" },
-	limit: 20,
+	limit: 10,
 	cursor,
 });
 

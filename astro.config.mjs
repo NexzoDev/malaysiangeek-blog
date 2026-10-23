@@ -33,6 +33,14 @@ export default defineConfig({
 			weights: [400, 500],
 			fallbacks: ["monospace"],
 		},
+		{
+			provider: fontProviders.google(),
+			name: "Playfair Display",
+			cssVariable: "--font-heading",
+			weights: [400, 500, 600, 700],
+			styles: ["normal", "italic"],
+			fallbacks: ["Georgia", "serif"],
+		},
 	],
 	devToolbar: { enabled: false },
 });
