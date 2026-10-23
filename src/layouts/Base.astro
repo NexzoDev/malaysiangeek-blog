@@ -495,23 +495,6 @@ const year = new Date().getFullYear();
 					-moz-osx-font-smoothing: grayscale;
 				}
 
-				/*
-				 * The frame rails: two hairlines that run the full height of
-				 * the page at the edges of the content frame. Fixed and behind
-				 * everything, so any surface with a background covers them.
-				 */
-				body::before {
-					content: "";
-					position: fixed;
-					inset-block: 0;
-					inset-inline: 0;
-					z-index: -1;
-					width: var(--frame-width);
-					margin-inline: auto;
-					border-inline: 1px solid var(--color-border);
-					pointer-events: none;
-				}
-
 				main {
 					flex: 1;
 				}
@@ -634,49 +617,9 @@ const year = new Date().getFullYear();
 					padding-inline: var(--frame-padding);
 				}
 
-				/* A full-bleed horizontal section, ruled off with a hairline */
+				/* A full-bleed horizontal section */
 				.band {
 					position: relative;
-					border-top: 1px solid var(--color-border);
-				}
-
-				/* Crosshairs where the band's rule meets the rails */
-				.band::before,
-				.band::after {
-					content: "";
-					position: absolute;
-					top: -5px;
-					width: 9px;
-					height: 9px;
-					background:
-						linear-gradient(
-								var(--color-border-strong),
-								var(--color-border-strong)
-							)
-							center / 1px 100% no-repeat,
-						linear-gradient(
-								var(--color-border-strong),
-								var(--color-border-strong)
-							)
-							center / 100% 1px no-repeat;
-					pointer-events: none;
-				}
-
-				.band::before {
-					inset-inline-start: calc((100% - var(--frame-width)) / 2 - 4px);
-				}
-
-				.band::after {
-					inset-inline-end: calc((100% - var(--frame-width)) / 2 - 4px);
-				}
-
-				main > .band:first-child {
-					border-top: 0;
-				}
-
-				main > .band:first-child::before,
-				main > .band:first-child::after {
-					content: none;
 				}
 
 				/* Vertical rhythm for content bands */
@@ -951,36 +894,6 @@ const year = new Date().getFullYear();
 				background: color-mix(in srgb, var(--color-bg) 82%, transparent);
 				backdrop-filter: saturate(1.4) blur(12px);
 				-webkit-backdrop-filter: saturate(1.4) blur(12px);
-				border-bottom: 1px solid var(--color-border);
-			}
-
-			.site-header::before,
-			.site-header::after {
-				content: "";
-				position: absolute;
-				bottom: -5px;
-				width: 9px;
-				height: 9px;
-				background:
-					linear-gradient(
-							var(--color-border-strong),
-							var(--color-border-strong)
-						)
-						center / 1px 100% no-repeat,
-					linear-gradient(
-							var(--color-border-strong),
-							var(--color-border-strong)
-						)
-						center / 100% 1px no-repeat;
-				pointer-events: none;
-			}
-
-			.site-header::before {
-				inset-inline-start: calc((100% - var(--frame-width)) / 2 - 4px);
-			}
-
-			.site-header::after {
-				inset-inline-end: calc((100% - var(--frame-width)) / 2 - 4px);
 			}
 
 			.site-header__inner {
@@ -989,7 +902,6 @@ const year = new Date().getFullYear();
 				gap: var(--spacing-6);
 				min-height: var(--nav-height);
 				padding-block: var(--spacing-2);
-				border-inline: 1px solid var(--color-border);
 			}
 
 			.brand {
@@ -1030,6 +942,10 @@ const year = new Date().getFullYear();
 				width: auto;
 				max-width: 260px;
 				object-fit: contain;
+				filter: drop-shadow(
+						0 0 10px light-dark(rgb(0 0 0 / 0.25), rgb(0 0 0 / 0.95))
+					)
+					drop-shadow(0 0 26px light-dark(rgb(0 0 0 / 0.15), rgb(0 0 0 / 0.7)));
 			}
 
 			/* Header theme toggle: sun in dark mode, moon in light mode. */
