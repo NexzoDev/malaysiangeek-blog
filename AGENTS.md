@@ -54,7 +54,7 @@ A blog with posts, pages, categories, tags, full-text search, and RSS. Designed 
 | All posts   | `/posts`           | Post rows with thumbnails, excerpts, bylines, and tag chips; cursor pagination                                                 |
 | Post detail | `/posts/[slug]`    | Title, excerpt, featured image, then a two-column reading view: body plus a table of contents and sidebar widgets on desktop; tags sit between the body and comments |
 | Search      | `/search`          | Full-text search over posts; matching title terms are highlighted                                                              |
-| Page        | `/pages/[slug]`    | Static page content (Portable Text)                                                                                            |
+| Page        | `/pages/[slug]`    | Title beside a frosted content card on desktop; on smaller screens the title moves inside the card above the body |
 | Category    | `/category/[slug]` | Card grid of posts in a category                                                                                               |
 | Tag         | `/tag/[slug]`      | Card grid of posts with a tag                                                                                                  |
 | RSS         | `/rss.xml`         | Generated feed                                                                                                                 |

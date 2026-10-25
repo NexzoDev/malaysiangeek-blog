@@ -60,7 +60,13 @@ const seo = getSeoMeta(page, {
 	.page__layout {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr);
-		gap: var(--spacing-8);
+		gap: var(--spacing-6);
+		padding: var(--spacing-6);
+		border-radius: var(--radius-xl);
+		background: var(--color-card);
+		box-shadow: var(--shadow-card);
+		-webkit-backdrop-filter: blur(8px) saturate(1.05);
+		backdrop-filter: blur(8px) saturate(1.05);
 	}
 
 	.page__title {
@@ -69,16 +75,38 @@ const seo = getSeoMeta(page, {
 		max-width: 22ch;
 	}
 
+	.page__body {
+		min-width: 0;
+	}
+
 	@media (min-width: 960px) {
 		.page__layout {
-			grid-template-columns: minmax(14rem, 1fr) minmax(0, var(--content-width));
+			grid-template-columns:
+				minmax(14rem, 1fr)
+				minmax(0, calc(var(--content-width) + var(--spacing-16)));
 			column-gap: clamp(2rem, 1rem + 4vw, 6rem);
+			padding: 0;
+			border-radius: 0;
+			background: transparent;
+			box-shadow: none;
+			-webkit-backdrop-filter: none;
+			backdrop-filter: none;
 		}
 
 		.page__header {
 			position: sticky;
 			top: calc(var(--nav-height) + var(--spacing-8));
 			align-self: start;
+		}
+
+		.page__body {
+			max-width: calc(var(--content-width) + var(--spacing-16));
+			padding: var(--spacing-8);
+			border-radius: var(--radius-xl);
+			background: var(--color-card);
+			box-shadow: var(--shadow-card);
+			-webkit-backdrop-filter: blur(8px) saturate(1.05);
+			backdrop-filter: blur(8px) saturate(1.05);
 		}
 	}
 </style>

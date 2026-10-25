@@ -174,14 +174,9 @@ body {
 	color: #fff !important;
 }
 
-/* Static pages render their long-form body on the wallpaper too. */
-.page .page__title,
-.page .prose :is(h1, h2, h3, h4, h5, h6, strong) {
+/* The page title sits on the wallpaper at desktop and in the card on phones. */
+.page .page__title {
 	color: #fff;
-}
-
-.page .prose {
-	--prose-color: #fff;
 }
 
 /*
