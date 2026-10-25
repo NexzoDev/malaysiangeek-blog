@@ -52,7 +52,7 @@ A blog with posts, pages, categories, tags, full-text search, and RSS. Designed 
 | ----------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
 | Home        | `/`                | Site title and tagline, featured grid of five flagged posts (centre hero + two stacked either side), Stories feed (compact archive rows on phones)                                       |
 | All posts   | `/posts`           | Post rows with thumbnails, excerpts, bylines, and tag chips; cursor pagination                                                 |
-| Post detail | `/posts/[slug]`    | Title, excerpt, featured image, then a three-column reading view: meta rail, body, table of contents and sidebar widgets; tags sit between the body and comments |
+| Post detail | `/posts/[slug]`    | Title, excerpt, featured image, then a two-column reading view: body plus a table of contents and sidebar widgets on desktop; tags sit between the body and comments |
 | Search      | `/search`          | Full-text search over posts; matching title terms are highlighted                                                              |
 | Page        | `/pages/[slug]`    | Static page content (Portable Text)                                                                                            |
 | Category    | `/category/[slug]` | Card grid of posts in a category                                                                                               |
@@ -79,7 +79,7 @@ Every page sits in the frame: full-width sections (`.band`) share a consistent `
 
 Type pairs **Playfair Display** (via `--font-heading`) for headings with **Inter** (`--font-body`) for body and **JetBrains Mono** (`--font-mono`) for code and uppercase `.eyebrow` labels. The homepage is a magazine layout: `FeaturedGrid` (five flagged posts: centre hero + two stacked either side; on phones one tall card with tiny dots that auto-advance every 5s) and `HomeFeed` (Trending/Latest switcher, horizontal `feed` cards, "Trending topics" sidebar).
 
-The article layout is the standout feature: a meta rail (authors, date, reading time), a 680px body column, and a rail with the table of contents and sidebar widgets. Below 1100px it collapses to one column, the table of contents is hidden, and the widgets move under the article. Tags sit between the body and the comments. Don't flatten it on desktop -- the layout signals "this is something to read".
+The article layout is the standout feature: an inline byline/date/reading row under the title at every size, a 680px body column, and a widget rail with the table of contents on desktop. Below 1100px it collapses to one column and the table of contents is hidden; the widgets move under the article. Tags sit between the body and the comments. Don't flatten it on desktop -- the layout signals "this is something to read".
 
 ## Customisation
 
@@ -104,7 +104,7 @@ CSS variables worth knowing (see `tokens.css` for the full list):
 - `--content-width` (680px) -- article body column
 - `--wide-width` (1200px) -- the frame width
 - `--frame-margin` / `--frame-padding` -- space outside and inside the frame
-- `--meta-col-width` (180px) / `--gutter-width` (200px) -- the article rails
+- `--gutter-width` (280px) -- the article's widget rail
 - `--avatar-size-{xs,sm,md,lg}` -- byline avatar sizes
 
 ## What not to do
@@ -112,7 +112,7 @@ CSS variables worth knowing (see `tokens.css` for the full list):
 - Don't use `--color-accent` (tech red) for anything except live/trending/featured badges -- no coloured section backgrounds.
 - Don't replace Playfair Display with a novelty display face (Bebas, Anton, etc.). Headings are editorial serif; body stays Inter.
 - Don't break the frame: new sections should be `.band` elements with their content in a `.frame`, so the content width lines up.
-- Don't collapse the article rails on desktop -- they're part of the reading experience.
+- Don't collapse the article's widget rail on desktop -- it's part of the reading experience.
 - Don't use stock blog copy ("Welcome to my blog", "Stay tuned for more"). Write a real tagline that says what this blog is about.
 - Don't seed the home page with three identical placeholder posts. If you only have one real post, show one real post.
 - Comments are enabled on posts and rendered on the post detail page. Configure moderation before publishing the site, or remove `commentsEnabled` and the comments UI together.

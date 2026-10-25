@@ -149,8 +149,8 @@ body {
 
 /*
  * Text that sits directly on the brick wallpaper is forced to white so it
- * stays legible now that the dark backdrop overlay is gone. Card content is
- * untouched; these selectors only cover the page-level text areas.
+ * stays legible under the dark backdrop wash. Card content is untouched;
+ * these selectors only cover the page-level text areas.
  */
 .band.intro :is(.eyebrow, .intro__title, .intro__subtitle, .intro__lead),
 .band.intro :is(.arrow-link, .search-hint),
@@ -159,7 +159,6 @@ body {
 .section-head__title,
 .home-feed__more,
 .related .arrow-link,
-.post-meta :is(.eyebrow, dd, time, .byline-list__name, .byline-list__role, .byline__more, .byline__avatar--initials),
 .toc :is(.eyebrow, .toc__link),
 .not-found :is(.intro__title, .intro__lead),
 .search-summary,

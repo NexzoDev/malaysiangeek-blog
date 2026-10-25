@@ -109,8 +109,7 @@
 		--frame-margin: clamp(0.75rem, 3vw, 2rem); /* viewport edge to rail */
 		--frame-padding: clamp(1rem, 3vw, 2rem); /* rail to content */
 		--frame-width: min(100% - 2 * var(--frame-margin), var(--wide-width));
-		--gutter-width: 200px; /* right rail (TOC, widgets) on article pages */
-		--meta-col-width: 180px; /* left meta rail on article pages */
+		--gutter-width: 280px; /* right rail (TOC, widgets) on article pages */
 		--nav-height: 64px; /* sticky header height */
 		--search-input-width: 200px; /* header search box width */
 

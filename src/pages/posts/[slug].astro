@@ -125,39 +125,6 @@ const hasHeadings = (post.data.content ?? []).some(
 	<article class="post">
 		<div class="band section">
 			<div class="frame post-layout">
-				<div class="post-meta">
-					<dl class="post-facts">
-						{
-							bylines.length > 0 && (
-								<div class="post-fact">
-									<dt class="eyebrow">
-										{bylines.length === 1 ? "Author" : "Authors"}
-									</dt>
-									<dd>
-										<Byline bylines={bylines} layout="list" />
-									</dd>
-								</div>
-							)
-						}
-						{
-							publishedAt && (
-								<div class="post-fact">
-									<dt class="eyebrow">Published</dt>
-									<dd>
-										<time datetime={publishedAt.toISOString()}>
-											{publishDate}
-										</time>
-									</dd>
-								</div>
-							)
-						}
-						<div class="post-fact">
-							<dt class="eyebrow">Reading time</dt>
-							<dd>{readingTime} min</dd>
-						</div>
-					</dl>
-				</div>
-
 				<div class="post-main">
 					<header class="intro post-header">
 						<div class="post-header__inner">
@@ -457,7 +424,6 @@ const hasHeadings = (post.data.content ?? []).some(
 		row-gap: var(--spacing-16);
 	}
 
-	.post-meta,
 	.toc {
 		display: none;
 	}
@@ -478,22 +444,6 @@ const hasHeadings = (post.data.content ?? []).some(
 
 	.post-rail {
 		overflow-wrap: anywhere;
-	}
-
-	/* Meta rail */
-	.post-facts {
-		display: grid;
-		gap: var(--spacing-8);
-	}
-
-	.post-fact dt {
-		margin-block-end: var(--spacing-3);
-	}
-
-	.post-fact dd {
-		font-size: var(--font-size-sm);
-		color: var(--color-text);
-		font-variant-numeric: tabular-nums;
 	}
 
 	/* Table of contents */
@@ -535,28 +485,16 @@ const hasHeadings = (post.data.content ?? []).some(
 	}
 
 	@media (min-width: 1100px) {
-		.post-header__meta {
-			display: none;
-		}
-
 		.post-layout {
-			grid-template-columns:
-				minmax(9rem, var(--meta-col-width))
-				minmax(36rem, calc(var(--content-width) + var(--spacing-16)))
-				minmax(10rem, var(--gutter-width));
+			grid-template-columns: minmax(0, 760px) minmax(14rem, var(--gutter-width));
 			align-items: start;
 			justify-content: space-between;
 			gap: var(--spacing-10) clamp(1.5rem, 1rem + 1.5vw, 2.25rem);
 		}
 
-		.post-meta,
 		.post-rail {
 			position: sticky;
 			top: calc(var(--nav-height) + var(--spacing-8));
-		}
-
-		.post-meta {
-			display: block;
 		}
 
 		.post-main {
@@ -1001,10 +939,6 @@ const hasHeadings = (post.data.content ?? []).some(
 	}
 
 	@media (max-width: 720px) {
-		.post-layout {
-			--frame-padding: 0;
-		}
-
 		.post-header .post-header__title {
 			font-size: 2rem;
 			line-height: 1.1;
@@ -1020,7 +954,7 @@ const hasHeadings = (post.data.content ?? []).some(
 		}
 
 		.post-main {
-			padding: var(--spacing-4);
+			padding: var(--spacing-5);
 		}
 
 		.post-widgets :global(.widget-search__input) {
