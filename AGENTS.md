@@ -52,7 +52,7 @@ A blog with posts, pages, categories, tags, full-text search, and RSS. Designed 
 | ----------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
 | Home        | `/`                | Site title and tagline, featured grid of five flagged posts (centre hero + two stacked either side), Stories feed (compact archive rows on phones)                                       |
 | All posts   | `/posts`           | Post rows with thumbnails, excerpts, bylines, and tag chips; cursor pagination                                                 |
-| Post detail | `/posts/[slug]`    | Tags, title, excerpt, featured image, then a three-column reading view: meta rail, body, table of contents and sidebar widgets |
+| Post detail | `/posts/[slug]`    | Title, excerpt, featured image, then a three-column reading view: meta rail, body, table of contents and sidebar widgets; tags sit between the body and comments |
 | Search      | `/search`          | Full-text search over posts; matching title terms are highlighted                                                              |
 | Page        | `/pages/[slug]`    | Static page content (Portable Text)                                                                                            |
 | Category    | `/category/[slug]` | Card grid of posts in a category                                                                                               |
@@ -71,7 +71,7 @@ Site settings have `title` and `tagline`. The header and footer use the image lo
 
 ## Visual character
 
-The site is an **industrial dark** theme: a fixed brick-wall texture (`/bg-repeat.webp`) that tiles edge to edge behind the content. Content sits on near-black surfaces (`--color-bg` `#050505`, `--color-surface` `#111111`) and frosted `--color-card` panels with hairline rings. Dark is the default; a light "graphite paper" variant ships for the header/footer theme toggle.
+The site is an **industrial dark** theme: a fixed brick-wall texture (`/bg-repeat.webp`) that tiles edge to edge behind the content, under a light theme-independent black wash. Content sits on near-black surfaces (`--color-bg` `#050505`, `--color-surface` `#111111`) and frosted `--color-card` panels with hairline rings. Dark is the default; a light "graphite paper" variant ships for the header/footer theme toggle.
 
 **MalaysianGeek purple** (`#9b1cb6`) is the brand colour and drives buttons, links, active nav, category labels, and focus rings. A **tech red** accent (`--color-accent`, `#fe0001`) is reserved for live/trending/featured badges only -- never for body text or broad surfaces.
 
@@ -79,7 +79,7 @@ Every page sits in the frame: full-width sections (`.band`) share a consistent `
 
 Type pairs **Playfair Display** (via `--font-heading`) for headings with **Inter** (`--font-body`) for body and **JetBrains Mono** (`--font-mono`) for code and uppercase `.eyebrow` labels. The homepage is a magazine layout: `FeaturedGrid` (five flagged posts: centre hero + two stacked either side; on phones one tall card with tiny dots that auto-advance every 5s) and `HomeFeed` (Trending/Latest switcher, horizontal `feed` cards, "Trending topics" sidebar).
 
-The article layout is the standout feature: a meta rail (authors, date, reading time), a 680px body column, and a rail with the table of contents and sidebar widgets. Below 1100px it collapses to one column, the table of contents is hidden, and the widgets move under the article. Don't flatten it on desktop -- the layout signals "this is something to read".
+The article layout is the standout feature: a meta rail (authors, date, reading time), a 680px body column, and a rail with the table of contents and sidebar widgets. Below 1100px it collapses to one column, the table of contents is hidden, and the widgets move under the article. Tags sit between the body and the comments. Don't flatten it on desktop -- the layout signals "this is something to read".
 
 ## Customisation
 

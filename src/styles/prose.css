@@ -28,8 +28,8 @@
 		--emdash-file-icon-color: var(--color-muted);
 
 		max-width: var(--content-width);
-		font-size: var(--font-size-lg);
-		line-height: 1.75;
+		font-size: 1.0625rem;
+		line-height: 1.7;
 		color: var(--prose-color);
 		overflow-wrap: break-word;
 	}
@@ -192,10 +192,10 @@
 		--color-bg-subtle: color-mix(in srgb, var(--color-fill) 50%, transparent);
 	}
 
-	@media (max-width: 640px) {
+	@media (max-width: 720px) {
 		.prose {
-			font-size: 1.0625rem;
-			line-height: 1.7;
+			font-size: 1rem;
+			line-height: 1.625;
 		}
 	}
 }

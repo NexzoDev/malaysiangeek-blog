@@ -91,22 +91,27 @@
 }
 
 /*
- * Brick-wall backdrop: the texture tiles at full size across the whole
- * viewport, so the wall runs edge to edge behind the content.
+ * Brick-wall backdrop: the texture tiles across the whole viewport, with a
+ * light black wash so the wall stays a little darker. The wash is a plain
+ * alpha gradient (not a light-dark token), so the theme toggle never changes it.
  */
 body {
 	background-color: var(--color-bg);
-	background-image: url("/bg-repeat.webp");
-	background-repeat: repeat;
-	background-attachment: fixed;
+	background-image:
+		linear-gradient(rgb(0 0 0 / 0.18), rgb(0 0 0 / 0.18)),
+		url("/bg-repeat.webp");
+	background-repeat: no-repeat, repeat;
+	background-attachment: fixed, fixed;
 	background-position: center top;
-	background-size: auto;
+	background-size:
+		100% 100%,
+		auto;
 }
 
 @media (max-width: 768px) {
 	body {
 		/* Fixed backgrounds are janky on mobile; let the texture scroll. */
-		background-attachment: scroll;
+		background-attachment: scroll, scroll;
 	}
 }
 

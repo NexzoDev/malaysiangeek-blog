@@ -161,34 +161,6 @@ const hasHeadings = (post.data.content ?? []).some(
 				<div class="post-main">
 					<header class="intro post-header">
 						<div class="post-header__inner">
-							<a href="/posts" class="arrow-link back-link">
-								<svg
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="1.75"
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									aria-hidden="true"
-								>
-									<path d="M19 12H5"></path>
-									<path d="m12 19-7-7 7-7"></path>
-								</svg>
-								All posts
-							</a>
-							{
-								tags.length > 0 && (
-									<ul class="chips post-header__tags" aria-label="Tags">
-										{tags.map((t) => (
-											<li>
-												<a href={`/tag/${t.slug}`} class="chip">
-													{t.label}
-												</a>
-											</li>
-										))}
-									</ul>
-								)
-							}
 							{primaryCategory && (
 								<p class="post-header__category eyebrow">
 									<a href={`/category/${primaryCategory.slug}`}>
@@ -239,6 +211,23 @@ const hasHeadings = (post.data.content ?? []).some(
 					<div class="prose" data-post-content>
 						<PortableText value={post.data.content} />
 					</div>
+
+					{
+						tags.length > 0 && (
+							<div class="post-tags">
+								<h2 class="eyebrow">Tagged</h2>
+								<ul class="chips" aria-label="Tags">
+									{tags.map((t) => (
+										<li>
+											<a href={`/tag/${t.slug}`} class="chip">
+												{t.label}
+											</a>
+										</li>
+									))}
+								</ul>
+							</div>
+						)
+					}
 
 					<section class="post-comments" aria-labelledby="comments-title">
 						<h2 id="comments-title" class="eyebrow">Discussion</h2>
@@ -381,25 +370,24 @@ const hasHeadings = (post.data.content ?? []).some(
 		margin-inline: 0;
 	}
 
-	.back-link {
-		margin-block-end: clamp(2rem, 1.5rem + 2vw, 3rem);
-	}
-
-	.back-link:hover svg {
-		translate: -2px 0;
-	}
-
-	.back-link:hover svg:dir(rtl) {
-		translate: 2px 0;
-	}
-
-	.post-header__tags {
-		margin-block-end: var(--spacing-5);
-	}
-
 	.post-header__lead {
-		font-size: var(--font-size-xl);
+		font-size: var(--font-size-lg);
 		line-height: var(--leading-normal);
+	}
+
+	/* Tags sit after the article body, just before the comments */
+	.post-tags {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: var(--spacing-2) var(--spacing-3);
+		margin-block-start: var(--spacing-10);
+		padding-block-start: var(--spacing-6);
+		border-block-start: 1px solid var(--color-border);
+	}
+
+	.post-tags .eyebrow {
+		color: var(--color-muted);
 	}
 
 	.post-header__meta {
@@ -1013,8 +1001,17 @@ const hasHeadings = (post.data.content ?? []).some(
 	}
 
 	@media (max-width: 720px) {
+		.post-layout {
+			--frame-padding: 0;
+		}
+
+		.post-header .post-header__title {
+			font-size: 2rem;
+			line-height: 1.1;
+		}
+
 		.post-header__lead {
-			font-size: var(--font-size-lg);
+			font-size: var(--font-size-base);
 		}
 
 		.post-hero__media {
@@ -1023,7 +1020,7 @@ const hasHeadings = (post.data.content ?? []).some(
 		}
 
 		.post-main {
-			padding: var(--spacing-5);
+			padding: var(--spacing-4);
 		}
 
 		.post-widgets :global(.widget-search__input) {
