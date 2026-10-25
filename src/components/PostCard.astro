@@ -37,7 +37,7 @@ const visibleTags = tags.slice(0, variant === "card" ? 2 : 3);
 const sizes = {
 	card: "(min-width: 1080px) 360px, (min-width: 700px) 45vw, 100vw",
 	feature: "(min-width: 900px) 640px, 100vw",
-	feed: "(min-width: 900px) 320px, 140px",
+	feed: "(min-width: 900px) 320px, (min-width: 769px) 28vw, 120px",
 	row: "(min-width: 720px) 240px, 120px",
 }[variant];
 ---
@@ -155,7 +155,7 @@ const sizes = {
 		overflow: hidden;
 		aspect-ratio: 16 / 10;
 		border-radius: var(--radius-lg);
-		background: var(--color-fill);
+		background: transparent;
 	}
 
 	.post__media::after {
@@ -386,6 +386,7 @@ const sizes = {
 
 	/* Feed: horizontal magazine card, image on the start side */
 	.post--feed {
+		--avatar-ring: var(--color-surface);
 		display: grid;
 		grid-template-columns: clamp(10rem, 28%, 18rem) minmax(0, 1fr);
 		align-items: start;
@@ -404,10 +405,11 @@ const sizes = {
 	.post--feed .post__media {
 		grid-column: 1;
 		grid-row: 1;
+		align-self: stretch;
 		width: 100%;
 		min-width: 0;
 		height: auto;
-		aspect-ratio: 4 / 3;
+		aspect-ratio: auto;
 	}
 
 	.post--feed .post__body {
@@ -431,23 +433,48 @@ const sizes = {
 		-webkit-line-clamp: 3;
 	}
 
-	@media (max-width: 600px) {
+	/*
+	 * Phones: the Stories feed drops to the same compact archive row as
+	 * /posts -- text on the start side, a small square thumbnail on the end.
+	 */
+	@media (max-width: 768px) {
 		.post--feed {
-			grid-template-columns: minmax(0, 1fr);
+			grid-template-columns: minmax(0, 1fr) 6rem;
 			gap: var(--spacing-4);
 			padding: var(--spacing-4);
 		}
 
 		.post--feed .post__media {
-			grid-column: 1;
+			grid-column: 2;
 			grid-row: 1;
-			aspect-ratio: 16 / 9;
-			height: auto;
+			aspect-ratio: auto;
 		}
 
 		.post--feed .post__body {
 			grid-column: 1;
-			grid-row: 2;
+			grid-row: 1;
+			gap: var(--spacing-4);
+		}
+
+		.post--feed .post__category {
+			display: none;
+		}
+
+		.post--feed .post__link {
+			gap: var(--spacing-2);
+		}
+
+		.post--feed .post__title {
+			font-size: var(--font-size-lg);
+		}
+
+		.post--feed .post__excerpt {
+			-webkit-line-clamp: 2;
+		}
+
+		.post--feed .post__footer {
+			justify-content: flex-start;
+			column-gap: var(--spacing-4);
 		}
 	}
 
@@ -472,6 +499,8 @@ const sizes = {
 	.post--row .post__media {
 		grid-column: 2;
 		grid-row: 1;
+		align-self: stretch;
+		aspect-ratio: auto;
 	}
 
 	.post--row .post__body {
@@ -520,7 +549,7 @@ const sizes = {
 		}
 
 		.post--row .post__media {
-			aspect-ratio: 1;
+			aspect-ratio: auto;
 		}
 
 		.post--row .post__title {

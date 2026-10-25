@@ -12,13 +12,11 @@ interface Props {
 }
 
 const { items } = Astro.props;
-
-// Slot order: main (centre), left top, left bottom, right top, right bottom.
-const [main, leftTop, leftBottom, rightTop, rightBottom] = items;
+const slides = items.slice(0, 5);
 ---
 
 {
-	main && (
+	slides.length > 0 && (
 		<section class="band featured" aria-labelledby="featured-heading">
 			<div class="frame">
 				<div class="featured-head">
@@ -27,53 +25,99 @@ const [main, leftTop, leftBottom, rightTop, rightBottom] = items;
 					</h2>
 				</div>
 
-				<div class="featured-grid">
-					<div class="featured-col featured-col--side">
-						{leftTop && (
+				<div class="featured-grid" data-featured>
+					{slides.map((item, i) => (
+						<div
+							class="featured-slide"
+							data-featured-slide
+							data-active={i === 0 ? "true" : undefined}
+						>
 							<FeaturedCard
-								post={leftTop.post}
-								category={leftTop.category}
-								variant="side"
+								post={item.post}
+								category={item.category}
+								variant={i === 0 ? "main" : "side"}
 							/>
-						)}
-						{leftBottom && (
-							<FeaturedCard
-								post={leftBottom.post}
-								category={leftBottom.category}
-								variant="side"
-							/>
-						)}
-					</div>
+						</div>
+					))}
 
-					<div class="featured-col featured-col--main">
-						<FeaturedCard
-							post={main.post}
-							category={main.category}
-							variant="main"
-						/>
-					</div>
-
-					<div class="featured-col featured-col--side">
-						{rightTop && (
-							<FeaturedCard
-								post={rightTop.post}
-								category={rightTop.category}
-								variant="side"
-							/>
-						)}
-						{rightBottom && (
-							<FeaturedCard
-								post={rightBottom.post}
-								category={rightBottom.category}
-								variant="side"
-							/>
-						)}
-					</div>
+					{slides.length > 1 && (
+						<div class="featured-dots" role="group" aria-label="Featured posts">
+							{slides.map((item, i) => (
+								<button
+									type="button"
+									class="featured-dot"
+									data-featured-dot
+									aria-label={`Show featured post ${i + 1}: ${
+										item.post.data.title || "Untitled"
+									}`}
+									aria-current={i === 0 ? "true" : "false"}
+								></button>
+							))}
+						</div>
+					)}
 				</div>
 			</div>
 		</section>
 	)
 }
+
+<script>
+	const root = document.querySelector<HTMLElement>("[data-featured]");
+	if (root) {
+		const slides = Array.from(
+			root.querySelectorAll<HTMLElement>("[data-featured-slide]"),
+		);
+		const dots = Array.from(
+			root.querySelectorAll<HTMLButtonElement>("[data-featured-dot]"),
+		);
+		if (slides.length > 1) {
+			const mq = window.matchMedia("(max-width: 768px)");
+			let index = 0;
+			let timer: ReturnType<typeof setInterval> | undefined;
+
+			const show = (next: number) => {
+				index = (next + slides.length) % slides.length;
+				slides.forEach((slide, i) => {
+					if (i === index) slide.setAttribute("data-active", "true");
+					else slide.removeAttribute("data-active");
+				});
+				dots.forEach((dot, i) => {
+					dot.setAttribute("aria-current", i === index ? "true" : "false");
+				});
+			};
+
+			const stop = () => {
+				if (timer) clearInterval(timer);
+				timer = undefined;
+			};
+
+			const start = () => {
+				stop();
+				if (!mq.matches) return;
+				timer = setInterval(() => show(index + 1), 5000);
+			};
+
+			dots.forEach((dot, i) => {
+				dot.addEventListener("click", () => {
+					show(i);
+					start();
+				});
+			});
+
+			root.addEventListener("mouseenter", stop);
+			root.addEventListener("mouseleave", start);
+			root.addEventListener("focusin", stop);
+			root.addEventListener("focusout", start);
+			mq.addEventListener("change", () => {
+				if (mq.matches) start();
+				else stop();
+			});
+
+			show(0);
+			start();
+		}
+	}
+</script>
 
 <style>
 	.featured {
@@ -92,50 +136,107 @@ const [main, leftTop, leftBottom, rightTop, rightBottom] = items;
 	.featured-grid {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr) minmax(0, 1fr);
+		grid-template-rows: repeat(2, minmax(0, 1fr));
 		gap: var(--spacing-5);
 		height: clamp(520px, 44vw, 620px);
 	}
 
-	.featured-col {
-		display: grid;
-		gap: var(--spacing-5);
+	.featured-slide {
+		min-width: 0;
 		min-height: 0;
 	}
 
-	.featured-col--side {
-		grid-template-rows: repeat(2, minmax(0, 1fr));
+	/* Newest in the centre; the next two stack left, the last two right. */
+	.featured-slide:nth-child(1) {
+		grid-column: 2;
+		grid-row: 1 / span 2;
 	}
 
-	.featured-col--main {
-		grid-template-rows: minmax(0, 1fr);
+	.featured-slide:nth-child(2) {
+		grid-column: 1;
+		grid-row: 1;
 	}
 
-	@media (min-width: 861px) {
-		/* A lone side card fills the column instead of leaving a gap. */
-		.featured-col--side > :global(:only-child) {
-			grid-row: span 2;
-		}
+	.featured-slide:nth-child(3) {
+		grid-column: 1;
+		grid-row: 2;
 	}
 
-	@media (max-width: 860px) {
+	.featured-slide:nth-child(4) {
+		grid-column: 3;
+		grid-row: 1;
+	}
+
+	.featured-slide:nth-child(5) {
+		grid-column: 3;
+		grid-row: 2;
+	}
+
+	.featured-dots {
+		display: none;
+	}
+
+	@media (max-width: 768px) {
 		.featured-grid {
 			grid-template-columns: minmax(0, 1fr);
+			grid-template-rows: auto;
+			gap: var(--spacing-3);
 			height: auto;
 		}
 
-		.featured-col--main {
-			order: -1;
+		.featured-grid .featured-slide {
+			grid-column: 1;
+			grid-row: 1;
+			display: none;
+			height: clamp(290px, 80vw, 380px);
 		}
 
-		.featured-col--side {
-			grid-template-columns: repeat(2, minmax(0, 1fr));
-			grid-template-rows: none;
+		.featured-grid .featured-slide[data-active] {
+			display: block;
 		}
-	}
 
-	@media (max-width: 560px) {
-		.featured-col--side {
-			grid-template-columns: minmax(0, 1fr);
+		.featured-dots {
+			grid-column: 1;
+			grid-row: 2;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 0;
+		}
+
+		.featured-dot {
+			display: grid;
+			place-items: center;
+			width: 1.5rem;
+			height: 1.5rem;
+			padding: 0;
+			border: 0;
+			border-radius: var(--radius-full);
+			background: none;
+			cursor: pointer;
+		}
+
+		.featured-dot::before {
+			content: "";
+			width: 6px;
+			height: 6px;
+			border-radius: var(--radius-full);
+			background: rgb(255 255 255 / 0.5);
+			box-shadow: 0 0 0 1px rgb(0 0 0 / 0.2);
+			transition:
+				background-color var(--transition-fast),
+				box-shadow var(--transition-fast);
+		}
+
+		.featured-dot[aria-current="true"]::before {
+			background: var(--color-brand);
+			box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-brand) 25%, transparent);
+		}
+
+		.featured-dot:focus-visible {
+			outline: 2px solid var(--color-brand);
+			outline-offset: 2px;
 		}
 	}
 </style>
+

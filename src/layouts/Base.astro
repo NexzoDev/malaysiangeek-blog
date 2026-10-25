@@ -1,7 +1,6 @@
 ---
 import { getMenuWithCacheHint, getSiteSettingsWithCacheHint } from "emdash";
 import {
-	WidgetArea,
 	EmDashHead,
 	EmDashBodyStart,
 	EmDashBodyEnd,
@@ -296,66 +295,47 @@ const year = new Date().getFullYear();
 			<div class="frame">
 				<div class="site-footer__card">
 					<div class="site-footer__grid">
-				<div class="site-footer__brand">
-					<a href="/" class="brand" aria-label={siteTitle}>
-						<img src={brandLogoSrc} alt={brandLogoAlt} class="brand__logo" />
-					</a>
-					{siteTagline && <p class="site-footer__tagline">{siteTagline}</p>}
+					<div class="site-footer__brand">
+						<a href="/" class="brand" aria-label={siteTitle}>
+							<img src={brandLogoSrc} alt={brandLogoAlt} class="brand__logo" />
+						</a>
+						{siteTagline && <p class="site-footer__tagline">{siteTagline}</p>}
+					</div>
+					<nav class="site-footer__col" aria-labelledby="footer-about">
+						<h2 id="footer-about" class="eyebrow">Links</h2>
+						<ul class="site-footer__links">
+							<li><a href="/pages/about">About Us</a></li>
+							<li><a href="/pages/contact">Contact Us</a></li>
+							<li><a href="/pages/privacy">Privacy Policy</a></li>
+							<li><a href="/pages/terms">Terms of Service</a></li>
+						</ul>
+					</nav>
+					<div class="site-footer__col site-footer__newsletter">
+						<h2 class="eyebrow">Stay Updated</h2>
+						<form class="footer-newsletter" data-newsletter>
+							<label class="footer-newsletter__label" for="footer-newsletter-email">
+								Email address
+							</label>
+							<div class="footer-newsletter__row">
+								<input
+									id="footer-newsletter-email"
+									class="footer-newsletter__input"
+									type="email"
+									name="email"
+									required
+									placeholder="Email address"
+									autocomplete="email"
+								/>
+								<button type="submit" class="btn btn--sm footer-newsletter__submit">
+									Subscribe
+								</button>
+							</div>
+							<p class="footer-newsletter__note" data-newsletter-note>
+								No spam. Just new posts.
+							</p>
+						</form>
+					</div>
 				</div>
-				{
-					menuItems.length > 0 && (
-						<nav class="site-footer__col" aria-labelledby="footer-navigate">
-							<h2 id="footer-navigate" class="eyebrow">
-								Navigate
-							</h2>
-							<ul class="site-footer__links">
-								{menuItems.map((item) => (
-									<li>
-										<a
-											href={item.url}
-											target={item.target}
-											rel={
-												item.target === "_blank"
-													? "noopener noreferrer"
-													: undefined
-											}
-										>
-											{item.label}
-										</a>
-									</li>
-								))}
-							</ul>
-						</nav>
-					)
-				}
-				<div class="site-footer__col">
-					<h2 class="eyebrow">Connect</h2>
-					<ul class="site-footer__links">
-						<li>
-							<a href="/rss.xml">
-								<svg
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="1.75"
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									aria-hidden="true"
-									><path d="M4 11a9 9 0 0 1 9 9"></path><path
-										d="M4 4a16 16 0 0 1 16 16"></path><circle
-										cx="5"
-										cy="19"
-										r="1"></circle></svg
-								>
-								RSS feed
-							</a>
-						</li>
-					</ul>
-				</div>
-				<div class="site-footer__col site-footer__widgets">
-					<WidgetArea name="footer" />
-				</div>
-			</div>
 			<div class="site-footer__bottom">
 				<div class="site-footer__bottom-inner">
 					<p class="site-footer__meta">{`© ${year} ${siteTitle}.`}</p>
@@ -942,10 +922,8 @@ const year = new Date().getFullYear();
 				width: auto;
 				max-width: 260px;
 				object-fit: contain;
-				filter: drop-shadow(
-						0 0 10px light-dark(rgb(0 0 0 / 0.25), rgb(0 0 0 / 0.95))
-					)
-					drop-shadow(0 0 26px light-dark(rgb(0 0 0 / 0.15), rgb(0 0 0 / 0.7)));
+				filter: drop-shadow(0 0 10px rgb(255 255 255 / 0.9))
+					drop-shadow(0 0 26px rgb(255 255 255 / 0.6));
 			}
 
 			/* Header theme toggle: sun in dark mode, moon in light mode. */
@@ -1175,7 +1153,7 @@ const year = new Date().getFullYear();
 
 			.site-footer__grid {
 				display: grid;
-				grid-template-columns: minmax(0, 2fr) repeat(3, minmax(0, 1fr));
+				grid-template-columns: minmax(0, 1.6fr) minmax(0, 0.8fr) minmax(0, 1.4fr);
 				gap: var(--spacing-10);
 				padding: var(--footer-pad);
 			}
@@ -1187,8 +1165,7 @@ const year = new Date().getFullYear();
 				color: var(--color-text-secondary);
 			}
 
-			.site-footer__col .eyebrow,
-			.site-footer__widgets :global(.widget__title) {
+			.site-footer__col .eyebrow {
 				margin-bottom: var(--spacing-4);
 			}
 
@@ -1216,30 +1193,65 @@ const year = new Date().getFullYear();
 				height: 15px;
 			}
 
-			.site-footer__widgets :global(.widget-area) {
-				display: grid;
-				gap: var(--spacing-8);
+			.site-footer__newsletter {
+				min-width: 0;
 			}
 
-			.site-footer__widgets :global(.widget__title) {
-				font-family: var(--font-mono);
-				font-size: var(--font-size-label);
-				font-weight: 500;
-				letter-spacing: var(--tracking-wider);
-				text-transform: uppercase;
+			.footer-newsletter {
+				display: grid;
+				gap: var(--spacing-2);
+				width: 100%;
+				min-width: 0;
+			}
+
+			.footer-newsletter__label {
+				position: absolute;
+				width: 1px;
+				height: 1px;
+				padding: 0;
+				margin: -1px;
+				overflow: hidden;
+				clip: rect(0, 0, 0, 0);
+				white-space: nowrap;
+				border: 0;
+			}
+
+			.footer-newsletter__row {
+				display: flex;
+				flex-wrap: wrap;
+				gap: var(--spacing-2);
+			}
+
+			.footer-newsletter__input {
+				flex: 1 1 9rem;
+				min-width: 0;
+				height: 36px;
+				padding-inline: var(--spacing-3);
+				border: 1px solid var(--color-border);
+				border-radius: var(--radius-full);
+				background: var(--color-bg);
+				color: var(--color-text);
+				font: inherit;
+				font-size: var(--font-size-sm);
+			}
+
+			.footer-newsletter__input::placeholder {
 				color: var(--color-muted);
 			}
 
-			.site-footer__widgets :global(.widget__content) {
-				font-size: var(--font-size-sm);
-				line-height: var(--leading-relaxed);
-				color: var(--color-text-secondary);
+			.footer-newsletter__input:focus {
+				outline: 2px solid transparent;
+				border-color: var(--color-brand);
+				box-shadow: 0 0 0 3px var(--color-brand-ring);
 			}
 
-			.site-footer__widgets :global(.widget__content ul) {
-				display: grid;
-				gap: var(--spacing-3);
-				list-style: none;
+			.footer-newsletter__note {
+				font-size: var(--font-size-xs);
+				color: var(--color-muted);
+			}
+
+			.footer-newsletter__submit {
+				flex-shrink: 0;
 			}
 
 			.site-footer__bottom {
@@ -1250,7 +1262,7 @@ const year = new Date().getFullYear();
 				display: flex;
 				flex-wrap: wrap;
 				align-items: center;
-				justify-content: space-between;
+				justify-content: center;
 				gap: var(--spacing-4);
 				padding: var(--spacing-5) var(--footer-pad);
 			}
@@ -1258,6 +1270,7 @@ const year = new Date().getFullYear();
 			.site-footer__meta {
 				font-size: var(--font-size-xs);
 				color: var(--color-muted);
+				text-align: center;
 			}
 
 			.site-footer__meta a {
@@ -1281,22 +1294,35 @@ const year = new Date().getFullYear();
 				}
 			}
 
-			/* Phones: brand and actions on the first row, the nav on its own row */
+			/*
+			 * Tablets and small laptops: give the nav its own centred row as
+			 * soon as the one-row header starts to run out of room.
+			 */
+			@media (max-width: 1024px) {
+				.site-header__inner {
+					flex-wrap: wrap;
+					row-gap: var(--spacing-1);
+				}
+
+				.site-nav {
+					order: 3;
+					flex-basis: 100%;
+					margin-inline-start: 0;
+				}
+
+				.site-nav ul {
+					justify-content: center;
+				}
+			}
+
+			/* Phones: tighter nav padding, and the search collapses to an icon */
 			@media (max-width: 640px) {
 				.site-header {
 					position: relative;
 				}
 
 				.site-header__inner {
-					flex-wrap: wrap;
-					row-gap: var(--spacing-1);
 					padding-block: var(--spacing-3) var(--spacing-2);
-				}
-
-				.site-nav {
-					order: 3;
-					flex-basis: 100%;
-					margin-inline-start: -10px;
 				}
 
 				.site-nav a {
@@ -1317,6 +1343,38 @@ const year = new Date().getFullYear();
 			@media (max-width: 560px) {
 				.site-footer__grid {
 					grid-template-columns: minmax(0, 1fr);
+				}
+
+				.site-footer__brand {
+					display: flex;
+					flex-direction: column;
+					align-items: center;
+					text-align: center;
+				}
+
+				.site-footer__col {
+					text-align: center;
+				}
+
+				.site-footer__links {
+					justify-items: center;
+				}
+
+				.footer-newsletter__note {
+					text-align: center;
+				}
+
+				.footer-newsletter__row {
+					flex-direction: column;
+				}
+
+				.footer-newsletter__input {
+					flex: none;
+					width: 100%;
+				}
+
+				.footer-newsletter__submit {
+					width: 100%;
 				}
 
 				.brand__name {
@@ -1340,6 +1398,20 @@ const year = new Date().getFullYear();
 				e.preventDefault();
 				searchInput.focus();
 			});
+
+			// Newsletter signup is a local demo until a provider is wired up.
+			document
+				.querySelectorAll<HTMLFormElement>("[data-newsletter]")
+				.forEach((form) => {
+					form.addEventListener("submit", (event) => {
+						event.preventDefault();
+						const note = form.querySelector<HTMLElement>(
+							"[data-newsletter-note]",
+						);
+						if (note) note.textContent = "Thanks! Newsletter signup is coming soon.";
+						form.reset();
+					});
+				});
 		</script>
 		<EmDashBodyEnd page={pageCtx} />
 	</body>

@@ -17,8 +17,8 @@ const publishedAt = post.data.publishedAt ?? null;
 const Heading = variant === "main" ? "h3" : "h4";
 const sizes =
 	variant === "main"
-		? "(min-width: 1000px) 620px, 100vw"
-		: "(min-width: 1000px) 300px, 50vw";
+		? "(min-width: 1000px) 620px, 90vw"
+		: "(min-width: 1000px) 300px, (min-width: 769px) 50vw, 90vw";
 ---
 
 <article class:list={["featured-card", `featured-card--${variant}`]}>
@@ -48,7 +48,7 @@ const sizes =
 				</time>
 			)}
 			{
-				variant === "main" && post.data.excerpt && (
+				post.data.excerpt && (
 					<p class="featured-card__excerpt">{post.data.excerpt}</p>
 				)
 			}
@@ -174,14 +174,21 @@ const sizes =
 		color: rgb(255 255 255 / 0.82);
 	}
 
-	@media (max-width: 860px) {
-		.featured-card {
-			height: auto;
-			aspect-ratio: 16 / 10;
+	@media (min-width: 769px) {
+		.featured-card--side .featured-card__excerpt {
+			display: none;
+		}
+	}
+
+	@media (max-width: 768px) {
+		.featured-card__title {
+			font-size: clamp(1.5rem, 1.1rem + 1.4vw, 2.25rem);
+			line-height: var(--leading-tight);
+			-webkit-line-clamp: 3;
 		}
 
-		.featured-card--main {
-			aspect-ratio: 16 / 9;
+		.featured-card__excerpt {
+			-webkit-line-clamp: 2;
 		}
 	}
 </style>

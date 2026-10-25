@@ -204,21 +204,6 @@ const { trending, latest, popular, tags, categories } = Astro.props;
 		display: none;
 	}
 
-	.feed-list:not([hidden]) {
-		animation: feed-reveal 380ms var(--ease-out) both;
-	}
-
-	@keyframes feed-reveal {
-		from {
-			opacity: 0;
-			transform: translateY(10px);
-		}
-		to {
-			opacity: 1;
-			transform: none;
-		}
-	}
-
 	.home-feed__more {
 		margin-top: var(--spacing-6);
 	}

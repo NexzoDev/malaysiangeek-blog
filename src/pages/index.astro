@@ -8,7 +8,6 @@ import {
 import Base from "../layouts/Base.astro";
 import FeaturedGrid from "../components/FeaturedGrid.astro";
 import HomeFeed from "../components/HomeFeed.astro";
-import CommunitySection from "../components/CommunitySection.astro";
 import { resolveBlogSiteIdentity } from "../utils/site-identity";
 
 const HERO_LIMIT = 12;
@@ -114,22 +113,6 @@ const sidebarCategories = categoryTermsResult.data
 	.slice(0, 6)
 	.map((term) => ({ slug: term.slug, label: term.label }));
 
-const news: Array<{ id: string; title: string; publishedAt: Date | null }> = [];
-const newsPool = [...feedItems];
-while (news.length < 3 && newsPool.length > 0) {
-	const index = Math.floor(Math.random() * newsPool.length);
-	const picked = newsPool.splice(index, 1)[0];
-	if (!picked) break;
-	news.push({
-		id: picked.post.id,
-		title: picked.post.data.title || "Untitled",
-		publishedAt: picked.post.data.publishedAt ?? null,
-	});
-}
-
-const featured = posts[0]
-	? { id: posts[0].id, title: posts[0].data.title || "the latest post" }
-	: null;
 ---
 
 <Base title={siteTitle} description={siteTagline}>
@@ -186,8 +169,6 @@ const featured = posts[0]
 					tags={sidebarTags}
 					categories={sidebarCategories}
 				/>
-
-				<CommunitySection featured={featured} news={news} />
 			</>
 		)
 	}

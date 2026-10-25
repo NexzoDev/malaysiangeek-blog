@@ -38,6 +38,7 @@
 	 */
 	--color-bg: light-dark(#f4f4f5, #050505);
 	--color-surface: light-dark(#ffffff, #161616);
+	--color-card: light-dark(rgb(255 255 255 / 0.65), rgb(22 22 22 / 0.65));
 	--color-fill: light-dark(#ececed, #202020);
 	--color-fill-strong: light-dark(#e1e1e3, #2a2a2a);
 	--color-bg-subtle: var(--color-fill);
@@ -61,10 +62,6 @@
 	/* Secondary accent: tech red. Use sparingly (badges, live, trending). */
 	--color-accent: light-dark(#d40000, #fe0001);
 	--color-accent-soft: color-mix(in srgb, var(--color-accent) 16%, transparent);
-
-	/* Brick-wall backdrop layers (see the body rule below) */
-	--backdrop-overlay: light-dark(rgba(244, 244, 245, 0.85), rgba(5, 5, 5, 0.62));
-	--backdrop-edge: light-dark(#f4f4f5, #000000);
 
 	/* Typography: editorial serif headings, Inter body, JetBrains Mono code */
 	--font-heading: "Playfair Display", Georgia, "Times New Roman", serif;
@@ -94,35 +91,22 @@
 }
 
 /*
- * Brick-wall backdrop: the texture tiles at full size, a dark overlay
- * dims it so text stays readable, and the left/right edges fade to black
- * so content feels like it sits on a lit wall.
+ * Brick-wall backdrop: the texture tiles at full size across the whole
+ * viewport, so the wall runs edge to edge behind the content.
  */
 body {
 	background-color: var(--color-bg);
-	background-image:
-		linear-gradient(
-			to right,
-			var(--backdrop-edge) 0%,
-			transparent 12%,
-			transparent 88%,
-			var(--backdrop-edge) 100%
-		),
-		linear-gradient(var(--backdrop-overlay), var(--backdrop-overlay)),
-		url("/bg-repeat.webp");
-	background-repeat: no-repeat, no-repeat, repeat;
-	background-attachment: fixed, fixed, fixed;
+	background-image: url("/bg-repeat.webp");
+	background-repeat: repeat;
+	background-attachment: fixed;
 	background-position: center top;
-	background-size:
-		100% 100%,
-		100% 100%,
-		auto;
+	background-size: auto;
 }
 
 @media (max-width: 768px) {
 	body {
 		/* Fixed backgrounds are janky on mobile; let the texture scroll. */
-		background-attachment: scroll, scroll, scroll;
+		background-attachment: scroll;
 	}
 }
 
@@ -157,3 +141,61 @@ body {
 		0 0 0 3px var(--color-brand-ring),
 		0 10px 30px -10px var(--color-brand);
 }
+
+/*
+ * Text that sits directly on the brick wallpaper is forced to white so it
+ * stays legible now that the dark backdrop overlay is gone. Card content is
+ * untouched; these selectors only cover the page-level text areas.
+ */
+.band.intro :is(.eyebrow, .intro__title, .intro__subtitle, .intro__lead),
+.band.intro :is(.arrow-link, .search-hint),
+.band.masthead :is(.eyebrow, .masthead__tagline),
+.featured-head .eyebrow,
+.section-head__title,
+.home-feed__more,
+.related .arrow-link,
+.post-meta :is(.eyebrow, dd, time, .byline-list__name, .byline-list__role, .byline__more, .byline__avatar--initials),
+.toc :is(.eyebrow, .toc__link),
+.not-found :is(.intro__title, .intro__lead),
+.search-summary,
+.search-hint,
+.result__title,
+.result__link,
+.result__snippet,
+.result__path,
+.result__arrow,
+.result::before,
+.empty-state__title,
+.empty-state__text {
+	color: #fff !important;
+}
+
+/* Static pages render their long-form body on the wallpaper too. */
+.page .page__title,
+.page .prose :is(h1, h2, h3, h4, h5, h6, strong) {
+	color: #fff;
+}
+
+.page .prose {
+	--prose-color: #fff;
+}
+
+/*
+ * Frosted card surfaces: a hint of the brick wallpaper shows through while
+ * the text stays readable.
+ */
+.post--card,
+.post--feature,
+.post--feed,
+.post--row,
+.featured-card,
+.sidebar-block,
+.community__col,
+.post-main,
+.post-widgets,
+.site-footer__card {
+	background: var(--color-card) !important;
+	-webkit-backdrop-filter: blur(8px) saturate(1.05);
+	backdrop-filter: blur(8px) saturate(1.05);
+}
+
