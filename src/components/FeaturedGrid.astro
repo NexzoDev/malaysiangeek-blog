@@ -31,6 +31,7 @@ const slides = items.slice(0, 5);
 							class="featured-slide"
 							data-featured-slide
 							data-active={i === 0 ? "true" : undefined}
+							data-enter={i === 0 ? "next" : undefined}
 						>
 							<FeaturedCard
 								post={item.post}
@@ -75,11 +76,16 @@ const slides = items.slice(0, 5);
 			let index = 0;
 			let timer: ReturnType<typeof setInterval> | undefined;
 
-			const show = (next: number) => {
+			const show = (next: number, direction: "next" | "prev" = "next") => {
 				index = (next + slides.length) % slides.length;
 				slides.forEach((slide, i) => {
-					if (i === index) slide.setAttribute("data-active", "true");
-					else slide.removeAttribute("data-active");
+					if (i === index) {
+						slide.setAttribute("data-active", "true");
+						slide.setAttribute("data-enter", direction);
+					} else {
+						slide.removeAttribute("data-active");
+						slide.removeAttribute("data-enter");
+					}
 				});
 				dots.forEach((dot, i) => {
 					dot.setAttribute("aria-current", i === index ? "true" : "false");
@@ -94,12 +100,12 @@ const slides = items.slice(0, 5);
 			const start = () => {
 				stop();
 				if (!mq.matches) return;
-				timer = setInterval(() => show(index + 1), 5000);
+				timer = setInterval(() => show(index + 1, "next"), 5000);
 			};
 
 			dots.forEach((dot, i) => {
 				dot.addEventListener("click", () => {
-					show(i);
+					show(i, i > index ? "next" : "prev");
 					start();
 				});
 			});
@@ -110,6 +116,7 @@ const slides = items.slice(0, 5);
 			let startY = 0;
 			let tracking = false;
 			let swiped = false;
+			let suppressClickUntil = 0;
 
 			const endSwipe = (event: PointerEvent, cancelled = false) => {
 				if (!tracking) return;
@@ -121,8 +128,12 @@ const slides = items.slice(0, 5);
 					Math.abs(dx) >= 44 &&
 					Math.abs(dx) > Math.abs(dy) * 1.2
 				) {
-					show(index + (dx < 0 ? 1 : -1));
+					show(
+						index + (dx < 0 ? 1 : -1),
+						dx < 0 ? "next" : "prev",
+					);
 					swiped = true;
+					suppressClickUntil = performance.now() + 350;
 				}
 				start();
 			};
@@ -147,14 +158,20 @@ const slides = items.slice(0, 5);
 				endSwipe(event, true),
 			);
 
-			// A swipe should not follow the card link when the finger lifts.
+			// A swipe should not follow the card link when the finger lifts. Only
+			// block the synthetic click that immediately follows the swipe; a
+			// deliberate tap/dot press or keyboard activation still works.
 			root.addEventListener(
 				"click",
 				(event) => {
-					if (!swiped) return;
+					if (!swiped || performance.now() > suppressClickUntil) {
+						swiped = false;
+						return;
+					}
 					event.preventDefault();
 					event.stopPropagation();
 					swiped = false;
+					suppressClickUntil = 0;
 				},
 				true,
 			);
@@ -249,6 +266,32 @@ const slides = items.slice(0, 5);
 
 		.featured-grid .featured-slide[data-active] {
 			display: block;
+		}
+
+		@keyframes featured-card-in {
+			from {
+				opacity: 0;
+				transform: translateX(var(--featured-enter-x, 18px));
+			}
+
+			to {
+				opacity: 1;
+				transform: translateX(0);
+			}
+		}
+
+		.featured-grid .featured-slide[data-active] :global(.featured-card) {
+			animation: featured-card-in 400ms var(--ease-out) both;
+		}
+
+		.featured-grid .featured-slide[data-enter="prev"] :global(.featured-card) {
+			--featured-enter-x: -18px;
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			.featured-grid .featured-slide[data-active] :global(.featured-card) {
+				animation: none;
+			}
 		}
 
 		.featured-dots {
