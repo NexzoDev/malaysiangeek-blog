@@ -104,6 +104,61 @@ const slides = items.slice(0, 5);
 				});
 			});
 
+			// Swipe left/right on the phone carousel. Vertical pans still scroll
+			// the page; a swipe only changes slides when it is clearly horizontal.
+			let startX = 0;
+			let startY = 0;
+			let tracking = false;
+			let swiped = false;
+
+			const endSwipe = (event: PointerEvent, cancelled = false) => {
+				if (!tracking) return;
+				tracking = false;
+				const dx = event.clientX - startX;
+				const dy = event.clientY - startY;
+				if (
+					!cancelled &&
+					Math.abs(dx) >= 44 &&
+					Math.abs(dx) > Math.abs(dy) * 1.2
+				) {
+					show(index + (dx < 0 ? 1 : -1));
+					swiped = true;
+				}
+				start();
+			};
+
+			root.addEventListener("pointerdown", (event) => {
+				if (!mq.matches) return;
+				swiped = false;
+				const target = event.target;
+				if (
+					target instanceof Element &&
+					target.closest("[data-featured-dot]")
+				) {
+					return;
+				}
+				tracking = true;
+				startX = event.clientX;
+				startY = event.clientY;
+				stop();
+			});
+			window.addEventListener("pointerup", (event) => endSwipe(event));
+			window.addEventListener("pointercancel", (event) =>
+				endSwipe(event, true),
+			);
+
+			// A swipe should not follow the card link when the finger lifts.
+			root.addEventListener(
+				"click",
+				(event) => {
+					if (!swiped) return;
+					event.preventDefault();
+					event.stopPropagation();
+					swiped = false;
+				},
+				true,
+			);
+
 			root.addEventListener("mouseenter", stop);
 			root.addEventListener("mouseleave", start);
 			root.addEventListener("focusin", stop);
@@ -182,6 +237,7 @@ const slides = items.slice(0, 5);
 			grid-template-rows: auto;
 			gap: var(--spacing-3);
 			height: auto;
+			touch-action: pan-y;
 		}
 
 		.featured-grid .featured-slide {
